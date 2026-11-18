@@ -494,6 +494,13 @@ class AutoPowerOffResponse:
 
 
 @dataclass
+class EqCapabilityResponse:
+    eq_type: EqEbbInquiredType | None
+    presets: list[EqPresetId]
+    raw: bytes
+
+
+@dataclass
 class EqExtendedInfoResponse:
     eq_type: EqEbbInquiredType | None
     band_count: int
@@ -643,6 +650,24 @@ def parse(raw: bytes) -> ParsedResponse | PeripheralDevicesResponse:
 
     if cmd in (NCASM_RET_PARAM, NCASM_NTFY_PARAM) and payload:
         return _parse_ncasm_param(payload, raw)
+
+    if cmd == EQEBB_RET_CAPABILITY and len(payload) >= 5:
+        try:
+            eq_type = EqEbbInquiredType(payload[0])
+        except ValueError:
+            eq_type = None
+        # Layout: [type][bandCount][levelSteps][presetCount][(presetId, 0x00)...]
+        preset_count = payload[3]
+        presets: list[EqPresetId] = []
+        for i in range(preset_count):
+            idx = 4 + i * 2
+            if idx >= len(payload):
+                break
+            try:
+                presets.append(EqPresetId(payload[idx]))
+            except ValueError:
+                pass
+        return EqCapabilityResponse(eq_type=eq_type, presets=presets, raw=raw)
 
     if cmd in (EQEBB_RET_STATUS, EQEBB_NTFY_STATUS, EQEBB_RET_PARAM, EQEBB_NTFY_PARAM) and payload:
         return _parse_eq_ebb(cmd, payload, raw)

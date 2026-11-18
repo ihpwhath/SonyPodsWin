@@ -52,6 +52,7 @@ from ..protocol.v2_table1 import (
     CapabilityInfoResponse,
     ConnectionQualityResponse,
     DeviceInfoResponse,
+    EqCapabilityResponse,
     EqEbbResponse,
     EqExtendedInfoResponse,
     GeneralSettingCapabilityResponse,
@@ -683,6 +684,7 @@ class MainWindow(QMainWindow):
             v2_table1.build_get_audio_codec_status(),
             v2_table1.build_get_upscaling_effect_status(),
             v2_table1.build_get_nc_asm_param(self._nc_type),
+            v2_table1.build_get_eq_ebb_capability(self._eq_type),
             v2_table1.build_get_eq_ebb_extended_info(self._eq_type),
             v2_table1.build_get_eq_ebb_param(self._eq_type),
             v2_table1.build_get_upscaling(self._upscaling_inq),
@@ -757,6 +759,17 @@ class MainWindow(QMainWindow):
                 self.sw_voice_focus.set_checked_silent(resp.ambient_mode == AmbientSoundMode.VOICE)
             if resp.noise_adaptive is not None:
                 self.sw_auto_ambient.set_checked_silent(resp.noise_adaptive)
+        elif isinstance(resp, EqCapabilityResponse):
+            if resp.presets:
+                cur = self.combo_eq.currentData()
+                self.combo_eq.blockSignals(True)
+                self.combo_eq.clear()
+                for p in resp.presets:
+                    self.combo_eq.addItem(p.label, p)
+                idx = self.combo_eq.findData(cur)
+                if idx >= 0:
+                    self.combo_eq.setCurrentIndex(idx)
+                self.combo_eq.blockSignals(False)
         elif isinstance(resp, EqExtendedInfoResponse):
             if resp.band_count > 0:
                 if resp.band_count >= 10 and not resp.has_clear_bass:
