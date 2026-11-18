@@ -712,7 +712,11 @@ class MainWindow(QMainWindow):
             elif resp.info_type == DeviceInfoType.FW_VERSION and resp.text:
                 self.lbl_fw.setText(f"固件版本 {resp.text} · 已连接")
         elif isinstance(resp, BatteryResponse):
-            if resp.levels and resp.levels[0] is not None:
+            if (
+                resp.kind in (PowerInquiredType.BATTERY, PowerInquiredType.LEFT_RIGHT_BATTERY, PowerInquiredType.CRADLE_BATTERY)
+                and resp.levels
+                and resp.levels[0] is not None
+            ):
                 pct = resp.levels[0]
                 self._current_battery = pct
                 self.lbl_battery.setText(f"电量 {pct}%")
