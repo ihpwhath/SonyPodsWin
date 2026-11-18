@@ -1,0 +1,34 @@
+name: Build Windows Executable
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Set up Python & dependencies
+        run: uv sync --frozen --dev
+
+      - name: Run unit tests
+        run: uv run python tests/test_protocol.py -v
+
+      - name: Build single-file exe with PyInstaller
+        run: |
+          uv run pyinstaller --noconfirm --onefile --windowed --name SonyPodsWin `
+            --paths src `
+            --collect-submodules sonypodswin `
+            src/sonypodswin/__main__.py
+
+      - name: Upload SonyPodsWin.exe artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SonyPodsWin-win-x64
+          path: dist/SonyPodsWin.exe
