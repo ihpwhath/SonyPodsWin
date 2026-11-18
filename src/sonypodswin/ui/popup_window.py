@@ -7,13 +7,13 @@ from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
     QLabel,
-    QProgressBar,
     QPushButton,
     QVBoxLayout,
     QWidget,
 )
 
 from ..protocol import NoiseControlMode
+from .graphics import BatteryBadge, HeadphoneAvatar
 
 
 class BatteryPopup(QWidget):
@@ -30,7 +30,7 @@ class BatteryPopup(QWidget):
             | Qt.WindowType.Tool,
         )
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
-        self.setFixedSize(330, 178)
+        self.setFixedSize(350, 182)
 
         self._auto_hide_timer = QTimer(self)
         self._auto_hide_timer.setSingleShot(True)
@@ -46,70 +46,49 @@ class BatteryPopup(QWidget):
         card.setStyleSheet(
             """
             QFrame {
-                background-color: rgba(28, 31, 38, 246);
-                border: 1px solid #3a404e;
-                border-radius: 14px;
+                background-color: rgba(27, 31, 38, 248);
+                border: 1px solid #323846;
+                border-radius: 12px;
             }
             QLabel {
                 border: none;
                 background: transparent;
-                color: #f3f4f6;
+                color: #f0f3f8;
             }
             """
         )
         layout = QVBoxLayout(card)
         layout.setContentsMargins(16, 14, 16, 14)
-        layout.setSpacing(10)
+        layout.setSpacing(12)
 
-        # Header row
+        # Header row: Avatar + Name + BatteryBadge + Close
         top = QHBoxLayout()
+        top.setSpacing(12)
+        self.avatar = HeadphoneAvatar(44)
+        top.addWidget(self.avatar)
+
+        info_col = QVBoxLayout()
+        info_col.setSpacing(3)
         self.lbl_name = QLabel("WH-1000XM6")
-        self.lbl_name.setStyleSheet("font-size: 15px; font-weight: 600; color: #ffffff;")
-        self.lbl_codec = QLabel("--")
-        self.lbl_codec.setStyleSheet(
-            "background-color: #2b313d; border-radius: 5px; padding: 2px 7px; font-size: 11px; color: #93c5fd;"
-        )
+        self.lbl_name.setStyleSheet("font-size: 16px; font-weight: 600; color: #ffffff;")
+        self.bat_badge = BatteryBadge()
+        info_col.addWidget(self.lbl_name)
+        info_col.addWidget(self.bat_badge)
+        top.addLayout(info_col, stretch=1)
+
         btn_close = QPushButton("×")
-        btn_close.setFixedSize(22, 22)
+        btn_close.setFixedSize(24, 24)
         btn_close.setStyleSheet(
-            "QPushButton { background: transparent; border: none; color: #9ca3af; font-size: 15px; }"
+            "QPushButton { background: transparent; border: none; color: #8b949e; font-size: 16px; }"
             "QPushButton:hover { color: #ffffff; }"
         )
         btn_close.clicked.connect(self.hide)
-        top.addWidget(self.lbl_name, stretch=1)
-        top.addWidget(self.lbl_codec)
-        top.addWidget(btn_close)
+        top.addWidget(btn_close, alignment=Qt.AlignmentFlag.AlignTop)
         layout.addLayout(top)
-
-        # Battery row
-        bat_row = QHBoxLayout()
-        self.bar_battery = QProgressBar()
-        self.bar_battery.setRange(0, 100)
-        self.bar_battery.setValue(0)
-        self.bar_battery.setTextVisible(False)
-        self.bar_battery.setFixedHeight(8)
-        self.bar_battery.setStyleSheet(
-            """
-            QProgressBar {
-                background-color: #2d323e;
-                border: none;
-                border-radius: 4px;
-            }
-            QProgressBar::chunk {
-                background-color: #22c55e;
-                border-radius: 4px;
-            }
-            """
-        )
-        self.lbl_pct = QLabel("--%")
-        self.lbl_pct.setStyleSheet("font-size: 13px; font-weight: 600; color: #e5e7eb;")
-        bat_row.addWidget(self.bar_battery, stretch=1)
-        bat_row.addWidget(self.lbl_pct)
-        layout.addLayout(bat_row)
 
         # Quick NC toggle row
         nc_row = QHBoxLayout()
-        nc_row.setSpacing(6)
+        nc_row.setSpacing(8)
         self._nc_group = QButtonGroup(self)
         self._nc_group.setExclusive(True)
         for label, mode in (
@@ -119,20 +98,25 @@ class BatteryPopup(QWidget):
         ):
             btn = QPushButton(label)
             btn.setCheckable(True)
+            btn.setCursor(Qt.CursorShape.PointingHandCursor)
             btn.setStyleSheet(
                 """
                 QPushButton {
-                    background-color: #262a33;
-                    border: 1px solid #353b48;
+                    background-color: #242933;
+                    border: 1px solid #323846;
                     border-radius: 7px;
-                    padding: 6px 8px;
+                    padding: 7px 8px;
                     color: #cbd5e1;
                     font-size: 12px;
+                    font-weight: 500;
+                }
+                QPushButton:hover {
+                    background-color: #2c323e;
                 }
                 QPushButton:checked {
-                    background-color: #1a8cff;
-                    border-color: #3399ff;
-                    color: #ffffff;
+                    background-color: #38bdf8;
+                    border-color: #38bdf8;
+                    color: #0f172a;
                     font-weight: 600;
                 }
                 """
@@ -143,10 +127,11 @@ class BatteryPopup(QWidget):
         layout.addLayout(nc_row)
 
         # Footer link
-        btn_open = QPushButton("打开完整控制面板")
+        btn_open = QPushButton("打开完整控制面板 ›")
+        btn_open.setCursor(Qt.CursorShape.PointingHandCursor)
         btn_open.setStyleSheet(
-            "QPushButton { background: transparent; border: none; color: #60a5fa; font-size: 12px; text-align: right; }"
-            "QPushButton:hover { color: #93c5fd; text-decoration: underline; }"
+            "QPushButton { background: transparent; border: none; color: #38bdf8; font-size: 12px; }"
+            "QPushButton:hover { color: #7dd3fc; }"
         )
         btn_open.clicked.connect(self._on_open_main)
         layout.addWidget(btn_open, alignment=Qt.AlignmentFlag.AlignRight)
@@ -165,15 +150,7 @@ class BatteryPopup(QWidget):
         nc_mode: NoiseControlMode | None,
     ) -> None:
         self.lbl_name.setText(model_name)
-        self.lbl_codec.setText(codec)
-        if battery is not None:
-            self.bar_battery.setValue(battery)
-            self.lbl_pct.setText(f"{battery}%")
-            color = "#ef4444" if battery <= 20 else "#22c55e"
-            self.bar_battery.setStyleSheet(
-                f"QProgressBar {{ background-color: #2d323e; border: none; border-radius: 4px; }}"
-                f"QProgressBar::chunk {{ background-color: {color}; border-radius: 4px; }}"
-            )
+        self.bat_badge.set_status(battery, codec)
         if nc_mode is not None:
             btn = self._nc_group.button(int(nc_mode))
             if btn:
