@@ -1,6 +1,7 @@
 """Main WinUI 3 / MagicPods-style window and BLE controller bridge for SonyPodsWin."""
 
 import asyncio
+import base64
 import ctypes
 import json
 import threading
@@ -67,6 +68,7 @@ from ..transport.ble_transport import DiscoveredDevice, SonyBleTandemClient
 from .graphics import HeadphoneAvatar, InteractiveEqGraph, enable_win11_dark_titlebar
 from .popup_window import BatteryPopup
 from .widgets import BatteryRing, CardFrame, MagicSlider, SettingRow, ToggleSwitch
+from .zanshang_asset import ZANSHANG_JPG_B64
 
 CONFIG_PATH = Path.home() / ".sonypodswin.json"
 
@@ -293,6 +295,14 @@ class MainWindow(QMainWindow):
             self.nav_group.addButton(btn, idx)
             nav_bar.addWidget(btn)
         nav_bar.addStretch(1)
+
+        # Restrained "About" entry at the far right end of the tab bar (page 4).
+        self.btn_about = QPushButton("关于")
+        self.btn_about.setObjectName("NavTabBtn")
+        self.btn_about.setCheckable(True)
+        self.btn_about.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.nav_group.addButton(self.btn_about, 4)
+        nav_bar.addWidget(self.btn_about)
         main_layout.addLayout(nav_bar)
 
         # ── Stacked Pages ──────────────────────────────────────────────────
@@ -301,6 +311,7 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self._build_page_sony_smart())
         self.stack.addWidget(self._build_page_windows_magic())
         self.stack.addWidget(self._build_page_logs())
+        self.stack.addWidget(self._build_page_about())
         self.nav_group.idClicked.connect(self.stack.setCurrentIndex)
         main_layout.addWidget(self.stack, stretch=1)
 
@@ -594,6 +605,84 @@ class MainWindow(QMainWindow):
         card.body.addWidget(self.txt_log)
         layout.addWidget(card)
         return page
+
+    def _build_page_about(self) -> QWidget:
+        page = QWidget()
+        layout = QVBoxLayout(page)
+        layout.setContentsMargins(0, 4, 4, 4)
+        layout.setSpacing(16)
+
+        card = CardFrame("")
+
+        lbl_name = QLabel("SonyPodsWin")
+        lbl_name.setStyleSheet("color: #FFFFFF; font-size: 22px; font-weight: 700;")
+        card.body.addWidget(lbl_name)
+
+        lbl_version = QLabel("版本 0.1.0")
+        lbl_version.setStyleSheet("color: #6B7077; font-size: 12px;")
+        card.body.addWidget(lbl_version)
+
+        lbl_intro = QLabel(
+            "一款为索尼 WH-1000XM6 打造的 Windows 桌面控制工具："
+            "降噪与环境声、10 段均衡器、智能免摘、多点连接与 Windows 联动，都在这一个窗口里。"
+        )
+        lbl_intro.setWordWrap(True)
+        lbl_intro.setStyleSheet("color: #A9ADB3; font-size: 14px;")
+        card.body.addWidget(lbl_intro)
+
+        lbl_repo = QLabel(
+            '项目主页：<a href="https://github.com/ihpwhath/SonyPodsWin" '
+            'style="color: #D4B16A; text-decoration: none;">github.com/ihpwhath/SonyPodsWin</a>'
+        )
+        lbl_repo.setOpenExternalLinks(True)
+        lbl_repo.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
+        lbl_repo.setStyleSheet("color: #A9ADB3; font-size: 14px;")
+        card.body.addWidget(lbl_repo)
+
+        card.add_divider()
+
+        # Collapsible appreciation (赞赏) entry: a single restrained text
+        # button; the QR code and note only appear after the user clicks.
+        self.btn_coffee = QPushButton("请作者喝杯咖啡 ▾")
+        self.btn_coffee.setObjectName("CoffeeBtn")
+        self.btn_coffee.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_coffee.clicked.connect(self._toggle_zanshang)
+        coffee_row = QHBoxLayout()
+        coffee_row.setContentsMargins(0, 0, 0, 0)
+        coffee_row.addWidget(self.btn_coffee)
+        coffee_row.addStretch(1)
+        card.body.addLayout(coffee_row)
+
+        self.zanshang_area = QWidget()
+        z_layout = QVBoxLayout(self.zanshang_area)
+        z_layout.setContentsMargins(0, 4, 0, 0)
+        z_layout.setSpacing(10)
+
+        lbl_qr = QLabel()
+        pm = QPixmap()
+        pm.loadFromData(base64.b64decode(ZANSHANG_JPG_B64))
+        if not pm.isNull():
+            lbl_qr.setPixmap(
+                pm.scaledToWidth(220, Qt.TransformationMode.SmoothTransformation)
+            )
+        z_layout.addWidget(lbl_qr, alignment=Qt.AlignmentFlag.AlignLeft)
+
+        lbl_note = QLabel("软件全部功能已完整开放，打赏纯属自愿；购买及售后问题请通过小红书联系。")
+        lbl_note.setWordWrap(True)
+        lbl_note.setStyleSheet("color: #A9ADB3; font-size: 13px;")
+        z_layout.addWidget(lbl_note)
+
+        self.zanshang_area.setVisible(False)
+        card.body.addWidget(self.zanshang_area)
+
+        layout.addWidget(card)
+        layout.addStretch(1)
+        return self._wrap_scroll(page)
+
+    def _toggle_zanshang(self) -> None:
+        expanded = not self.zanshang_area.isVisible()
+        self.zanshang_area.setVisible(expanded)
+        self.btn_coffee.setText("请作者喝杯咖啡 ▴" if expanded else "请作者喝杯咖啡 ▾")
 
     def _setup_tray(self) -> None:
         self.tray = QSystemTrayIcon(_make_tray_icon(), self)

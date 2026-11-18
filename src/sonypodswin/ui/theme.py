@@ -124,6 +124,20 @@ QPushButton#GhostBtn:hover {
     background-color: #2A2D32;
 }
 
+QPushButton#CoffeeBtn {
+    background-color: transparent;
+    border: none;
+    border-radius: 0px;
+    padding: 4px 0px;
+    color: #D4B16A;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+QPushButton#CoffeeBtn:hover {
+    color: #DFC07C;
+}
+
 QPushButton#NavTabBtn {
     background-color: transparent;
     border: none;
