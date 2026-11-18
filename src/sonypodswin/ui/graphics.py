@@ -44,12 +44,9 @@ class HeadphoneAvatar(QWidget):
         w = float(self.width())
         h = float(self.height())
 
-        # Subtle circular glow backdrop
-        grad = QLinearGradient(0, 0, w, h)
-        grad.setColorAt(0.0, QColor("#2a303c"))
-        grad.setColorAt(1.0, QColor("#1e222a"))
-        p.setBrush(grad)
-        p.setPen(QPen(QColor("#363d4a"), 1.0))
+        # Subtle circular backdrop (flat, design spec v1 palette)
+        p.setBrush(QColor("#34373D"))
+        p.setPen(QPen(QColor("#3A3D42"), 1.0))
         p.drawEllipse(QRectF(1.5, 1.5, w - 3, h - 3))
 
         # Headband arc
@@ -113,7 +110,7 @@ class BatteryBadge(QWidget):
         p.setFont(font)
 
         # '电量' label
-        p.setPen(QColor("#9ca3af"))
+        p.setPen(QColor("#A9ADB3"))
         p.drawText(QRectF(0, 0, 30, 20), Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft, "电量")
 
         # Battery body
@@ -121,20 +118,20 @@ class BatteryBadge(QWidget):
         by = 4.0
         bw = 24.0
         bh = 12.0
-        p.setPen(QPen(QColor("#9ca3af"), 1.3))
+        p.setPen(QPen(QColor("#A9ADB3"), 1.3))
         p.setBrush(Qt.BrushStyle.NoBrush)
         p.drawRoundedRect(QRectF(bx, by, bw, bh), 3.0, 3.0)
 
         # Battery positive nub
         p.setPen(Qt.PenStyle.NoPen)
-        p.setBrush(QColor("#9ca3af"))
+        p.setBrush(QColor("#A9ADB3"))
         p.drawRoundedRect(QRectF(bx + bw + 1.5, by + 3.5, 2.2, 5.0), 1.0, 1.0)
 
         # Fill
         pct = self._percent
         if pct is not None:
             fill_ratio = max(0.05, min(1.0, pct / 100.0))
-            fill_color = QColor("#ef4444") if pct <= 20 else QColor("#22c55e")
+            fill_color = QColor("#ef4444") if pct <= 20 else QColor("#D4B16A")
             p.setBrush(fill_color)
             p.drawRoundedRect(QRectF(bx + 2.2, by + 2.2, (bw - 4.4) * fill_ratio, bh - 4.4), 1.5, 1.5)
 
@@ -142,7 +139,7 @@ class BatteryBadge(QWidget):
         txt = f"{pct}%" if pct is not None else "--%"
         if self._codec:
             txt += f"  ·  {self._codec}"
-        p.setPen(QColor("#d1d5db"))
+        p.setPen(QColor("#FFFFFF"))
         p.drawText(QRectF(bx + bw + 8.0, 0, 140, 20), Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft, txt)
 
 
@@ -217,12 +214,12 @@ class InteractiveEqGraph(QWidget):
         mid_y = (top_y + bot_y) / 2.0
 
         # Background panel
-        p.setBrush(QColor("#1a1d24"))
-        p.setPen(QPen(QColor("#2a2f3a"), 1.0))
-        p.drawRoundedRect(QRectF(0.5, 0.5, w - 1, h - 1), 10.0, 10.0)
+        p.setBrush(QColor("#1E1F22"))
+        p.setPen(QPen(QColor("#3A3D42"), 1.0))
+        p.drawRoundedRect(QRectF(0.5, 0.5, w - 1, h - 1), 8.0, 8.0)
 
         # Horizontal reference grid lines (+max, 0, -max)
-        grid_pen = QPen(QColor("#282d37"), 1.0, Qt.PenStyle.DashLine)
+        grid_pen = QPen(QColor("#3A3D42"), 1.0, Qt.PenStyle.DashLine)
         p.setPen(grid_pen)
         for gy in (top_y, mid_y, bot_y):
             p.drawLine(QPointF(pad_x, gy), QPointF(w - pad_x, gy))
@@ -232,7 +229,7 @@ class InteractiveEqGraph(QWidget):
             return
 
         # Vertical guide lines
-        v_pen = QPen(QColor("#232730"), 1.0)
+        v_pen = QPen(QColor("#34373D"), 1.0)
         p.setPen(v_pen)
         for pt in pts:
             p.drawLine(QPointF(pt.x(), top_y), QPointF(pt.x(), bot_y))
@@ -245,44 +242,34 @@ class InteractiveEqGraph(QWidget):
             cx = (p0.x() + p1.x()) / 2.0
             path.cubicTo(QPointF(cx, p0.y()), QPointF(cx, p1.y()), p1)
 
-        # Area fill under curve
-        fill_path = QPainterPath(path)
-        fill_path.lineTo(QPointF(pts[-1].x(), bot_y))
-        fill_path.lineTo(QPointF(pts[0].x(), bot_y))
-        fill_path.closeSubpath()
-        grad = QLinearGradient(0, top_y, 0, bot_y)
-        grad.setColorAt(0.0, QColor(56, 189, 248, 85))
-        grad.setColorAt(1.0, QColor(56, 189, 248, 5))
-        p.fillPath(fill_path, grad)
-
-        # Curve stroke
-        curve_pen = QPen(QColor("#38bdf8"), 2.4)
+        # Curve stroke (design spec v1: flat grey line, no area fill or glow)
+        curve_pen = QPen(QColor("#A9ADB3"), 1.5)
         p.setPen(curve_pen)
         p.setBrush(Qt.BrushStyle.NoBrush)
         p.drawPath(path)
 
         # Nodes, dB labels, and frequency labels
-        font_val = QFont("Segoe UI", 8, QFont.Weight.DemiBold)
-        font_freq = QFont("Segoe UI", 8)
+        font_val = QFont("Microsoft YaHei UI", 8, QFont.Weight.DemiBold)
+        font_freq = QFont("Microsoft YaHei UI", 8)
         for i, pt in enumerate(pts):
             diff = self._steps[i] - self._center
             val_str = f"{diff:+d}" if diff != 0 else "0"
 
             # Value label above top
             p.setFont(font_val)
-            p.setPen(QColor("#38bdf8") if diff != 0 else QColor("#6b7280"))
+            p.setPen(QColor("#FFFFFF") if diff != 0 else QColor("#6B7077"))
             p.drawText(QRectF(pt.x() - 18, 5, 36, 18), Qt.AlignmentFlag.AlignCenter, val_str)
 
-            # Node circle
+            # Node circle: white stroke, dark fill, 10px diameter (spec v1)
             active = self._dragging_idx == i
-            r = 6.5 if active else 5.2
-            p.setPen(QPen(QColor("#ffffff"), 1.8))
-            p.setBrush(QColor("#0284c7") if active else QColor("#38bdf8"))
+            r = 6.0 if active else 5.0
+            p.setPen(QPen(QColor("#FFFFFF"), 1.5))
+            p.setBrush(QColor("#D4B16A") if active else QColor("#1E1F22"))
             p.drawEllipse(pt, r, r)
 
             # Frequency label at bottom
             p.setFont(font_freq)
-            p.setPen(QColor("#9ca3af"))
+            p.setPen(QColor("#6B7077"))
             lbl = self._labels[i] if i < len(self._labels) else ""
             p.drawText(QRectF(pt.x() - 20, bot_y + 6, 40, 18), Qt.AlignmentFlag.AlignCenter, lbl)
 

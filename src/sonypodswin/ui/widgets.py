@@ -1,4 +1,4 @@
-"""WinUI 3 / MagicPods-style widgets for SonyPodsWin."""
+"""Custom widgets for SonyPodsWin (design spec v1 styling)."""
 
 from PySide6.QtCore import Property, QEasingCurve, QPropertyAnimation, QRectF, Qt, Signal
 from PySide6.QtGui import QColor, QPainter, QPen
@@ -19,9 +19,9 @@ class _PillSwitch(QAbstractButton):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setCheckable(True)
-        self.setFixedSize(40, 20)
+        self.setFixedSize(48, 26)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self._thumb_x = 4.0
+        self._thumb_x = 3.0
         self._anim = QPropertyAnimation(self, b"thumbX", self)
         self._anim.setDuration(130)
         self._anim.setEasingCurve(QEasingCurve.Type.OutCubic)
@@ -39,13 +39,13 @@ class _PillSwitch(QAbstractButton):
     def _start_anim(self, checked: bool) -> None:
         self._anim.stop()
         self._anim.setStartValue(self._thumb_x)
-        self._anim.setEndValue(22.0 if checked else 4.0)
+        self._anim.setEndValue(25.0 if checked else 3.0)
         self._anim.start()
 
     def set_checked_silent(self, checked: bool) -> None:
         self.blockSignals(True)
         self.setChecked(checked)
-        self._thumb_x = 22.0 if checked else 4.0
+        self._thumb_x = 25.0 if checked else 3.0
         self.blockSignals(False)
         self.update()
 
@@ -59,17 +59,17 @@ class _PillSwitch(QAbstractButton):
         p.setRenderHint(QPainter.RenderHint.Antialiasing)
         checked = self.isChecked()
         if checked:
-            p.setBrush(QColor("#38bdf8"))
-            p.setPen(QPen(QColor("#38bdf8"), 1.2))
+            p.setBrush(QColor("#D4B16A"))
+            p.setPen(QPen(QColor("#D4B16A"), 1.2))
         else:
-            p.setBrush(QColor("#1b1f26"))
-            p.setPen(QPen(QColor("#8b949e"), 1.3))
-        p.drawRoundedRect(QRectF(1.0, 1.0, self.width() - 2.0, self.height() - 2.0), 9.0, 9.0)
+            p.setBrush(QColor("#34373D"))
+            p.setPen(QPen(QColor("#3A3D42"), 1.2))
+        p.drawRoundedRect(QRectF(1.0, 1.0, self.width() - 2.0, self.height() - 2.0), 12.0, 12.0)
 
-        thumb_color = QColor("#0f172a") if checked else QColor("#c9d1d9")
+        thumb_color = QColor("#FFFFFF") if checked else QColor("#A9ADB3")
         p.setBrush(thumb_color)
         p.setPen(Qt.PenStyle.NoPen)
-        p.drawEllipse(QRectF(self._thumb_x, 4.0, 12.0, 12.0))
+        p.drawEllipse(QRectF(self._thumb_x, 3.0, 20.0, 20.0))
 
 
 class ToggleSwitch(QWidget):
@@ -83,7 +83,7 @@ class ToggleSwitch(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(8)
         self._lbl = QLabel("关")
-        self._lbl.setStyleSheet("color: #d1d5db; font-size: 13px;")
+        self._lbl.setStyleSheet("color: #FFFFFF; font-size: 14px;")
         self._pill = _PillSwitch()
         self._pill.toggled.connect(lambda c: self._lbl.setText("开" if c else "关"))
         self._pill.toggled_by_user.connect(self.toggled_by_user.emit)
@@ -124,8 +124,8 @@ class MagicSlider(QWidget):
 
         self.lbl_val = QLabel(f"{initial}{suffix}")
         self.lbl_val.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        self.lbl_val.setFixedWidth(42)
-        self.lbl_val.setStyleSheet("color: #e5e7eb; font-size: 13px;")
+        self.lbl_val.setFixedWidth(64)
+        self.lbl_val.setStyleSheet("color: #FFFFFF; font-size: 18px; font-weight: 500;")
 
         self.slider = QSlider(Qt.Orientation.Horizontal)
         self.slider.setRange(min_val, max_val)
@@ -184,8 +184,8 @@ class CardFrame(QFrame):
         super().__init__()
         self.setObjectName("SectionCard")
         self.body = QVBoxLayout(self)
-        self.body.setContentsMargins(18, 14, 18, 14)
-        self.body.setSpacing(6)
+        self.body.setContentsMargins(20, 16, 20, 16)
+        self.body.setSpacing(8)
         if title:
             lbl = QLabel(title)
             lbl.setObjectName("SectionHeader")
@@ -195,3 +195,70 @@ class CardFrame(QFrame):
         div = QFrame()
         div.setObjectName("RowDivider")
         self.body.addWidget(div)
+
+
+class _RingCanvas(QWidget):
+    """Thin circular progress ring: 42px diameter, 3px stroke (design spec v1)."""
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self.setFixedSize(42, 42)
+        self._percent: int | None = None
+
+    def set_percent(self, percent: int | None) -> None:
+        self._percent = percent
+        self.update()
+
+    def paintEvent(self, _event) -> None:  # type: ignore[override]
+        p = QPainter(self)
+        p.setRenderHint(QPainter.RenderHint.Antialiasing)
+        rect = QRectF(1.5, 1.5, 39.0, 39.0)
+        track = QPen(QColor("#3A3D42"), 3.0)
+        track.setCapStyle(Qt.PenCapStyle.RoundCap)
+        p.setPen(track)
+        p.setBrush(Qt.BrushStyle.NoBrush)
+        p.drawEllipse(rect)
+        if self._percent is not None:
+            pct = max(0, min(100, self._percent))
+            arc = QPen(QColor("#D4B16A"), 3.0)
+            arc.setCapStyle(Qt.PenCapStyle.RoundCap)
+            p.setPen(arc)
+            # Start at 12 o'clock (90 deg in Qt arc units), sweep clockwise.
+            p.drawArc(rect, 90 * 16, -int(360 * 16 * pct / 100))
+
+
+class BatteryRing(QWidget):
+    """Header battery display per design spec v1: '电量' + thin ring + big number + meta.
+
+    Drop-in replacement for the header BatteryBadge: same set_status(percent, meta)
+    calling convention; the meta string (codec / firmware) is rendered verbatim
+    as secondary text.
+    """
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(10)
+
+        self._lbl_caption = QLabel("电量")
+        self._lbl_caption.setStyleSheet("color: #A9ADB3; font-size: 14px;")
+        layout.addWidget(self._lbl_caption)
+
+        self._ring = _RingCanvas()
+        layout.addWidget(self._ring)
+
+        self._lbl_value = QLabel("--%")
+        self._lbl_value.setStyleSheet("color: #FFFFFF; font-size: 20px; font-weight: 600;")
+        layout.addWidget(self._lbl_value)
+
+        self._lbl_meta = QLabel("")
+        self._lbl_meta.setStyleSheet("color: #A9ADB3; font-size: 14px;")
+        layout.addWidget(self._lbl_meta)
+        layout.addStretch(1)
+
+    def set_status(self, percent: int | None, meta: str = "") -> None:
+        self._ring.set_percent(percent)
+        self._lbl_value.setText(f"{percent}%" if percent is not None else "--%")
+        meta = meta.strip()
+        self._lbl_meta.setText(f"·  {meta}" if meta else "")

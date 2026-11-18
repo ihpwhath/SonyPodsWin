@@ -46,14 +46,14 @@ class BatteryPopup(QWidget):
         card.setStyleSheet(
             """
             QFrame {
-                background-color: rgba(27, 31, 38, 248);
-                border: 1px solid #323846;
+                background-color: rgba(42, 45, 50, 248);
+                border: 1px solid #3A3D42;
                 border-radius: 12px;
             }
             QLabel {
                 border: none;
                 background: transparent;
-                color: #f0f3f8;
+                color: #FFFFFF;
             }
             """
         )
@@ -79,7 +79,7 @@ class BatteryPopup(QWidget):
         btn_close = QPushButton("×")
         btn_close.setFixedSize(24, 24)
         btn_close.setStyleSheet(
-            "QPushButton { background: transparent; border: none; color: #8b949e; font-size: 16px; }"
+            "QPushButton { background: transparent; border: none; color: #6B7077; font-size: 16px; }"
             "QPushButton:hover { color: #ffffff; }"
         )
         btn_close.clicked.connect(self.hide)
@@ -102,21 +102,21 @@ class BatteryPopup(QWidget):
             btn.setStyleSheet(
                 """
                 QPushButton {
-                    background-color: #242933;
-                    border: 1px solid #323846;
-                    border-radius: 7px;
+                    background-color: #34373D;
+                    border: 1px solid #3A3D42;
+                    border-radius: 8px;
                     padding: 7px 8px;
-                    color: #cbd5e1;
+                    color: #FFFFFF;
                     font-size: 12px;
                     font-weight: 500;
                 }
                 QPushButton:hover {
-                    background-color: #2c323e;
+                    background-color: #3A3D42;
                 }
                 QPushButton:checked {
-                    background-color: #38bdf8;
-                    border-color: #38bdf8;
-                    color: #0f172a;
+                    background-color: #D4B16A;
+                    border-color: #D4B16A;
+                    color: #1E1F22;
                     font-weight: 600;
                 }
                 """
@@ -130,8 +130,8 @@ class BatteryPopup(QWidget):
         btn_open = QPushButton("打开完整控制面板 ›")
         btn_open.setCursor(Qt.CursorShape.PointingHandCursor)
         btn_open.setStyleSheet(
-            "QPushButton { background: transparent; border: none; color: #38bdf8; font-size: 12px; }"
-            "QPushButton:hover { color: #7dd3fc; }"
+            "QPushButton { background: transparent; border: none; color: #D4B16A; font-size: 12px; }"
+            "QPushButton:hover { color: #DFC07C; }"
         )
         btn_open.clicked.connect(self._on_open_main)
         layout.addWidget(btn_open, alignment=Qt.AlignmentFlag.AlignRight)

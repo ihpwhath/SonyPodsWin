@@ -64,9 +64,9 @@ from ..protocol.v2_table1 import (
 )
 from ..protocol.v2_table2 import PeripheralDevicesResponse
 from ..transport.ble_transport import DiscoveredDevice, SonyBleTandemClient
-from .graphics import BatteryBadge, HeadphoneAvatar, InteractiveEqGraph, enable_win11_dark_titlebar
+from .graphics import HeadphoneAvatar, InteractiveEqGraph, enable_win11_dark_titlebar
 from .popup_window import BatteryPopup
-from .widgets import CardFrame, MagicSlider, SettingRow, ToggleSwitch
+from .widgets import BatteryRing, CardFrame, MagicSlider, SettingRow, ToggleSwitch
 
 CONFIG_PATH = Path.home() / ".sonypodswin.json"
 
@@ -98,10 +98,10 @@ def _make_tray_icon() -> QIcon:
     pm.fill(Qt.GlobalColor.transparent)
     p = QPainter(pm)
     p.setRenderHint(QPainter.RenderHint.Antialiasing)
-    p.setBrush(QColor("#38bdf8"))
+    p.setBrush(QColor("#D4B16A"))
     p.setPen(Qt.PenStyle.NoPen)
     p.drawRoundedRect(4, 4, 56, 56, 14, 14)
-    p.setPen(QColor("#0f172a"))
+    p.setPen(QColor("#1E1F22"))
     font = p.font()
     font.setPointSize(24)
     font.setBold(True)
@@ -233,15 +233,15 @@ class MainWindow(QMainWindow):
         root.setObjectName("RootWindow")
         self.setCentralWidget(root)
         main_layout = QVBoxLayout(root)
-        main_layout.setContentsMargins(20, 16, 20, 16)
-        main_layout.setSpacing(12)
+        main_layout.setContentsMargins(24, 16, 24, 16)
+        main_layout.setSpacing(16)
 
         # ── MagicPods-style Top Hero Banner ────────────────────────────────
         banner = QFrame()
         banner.setObjectName("HeaderBanner")
         b_layout = QHBoxLayout(banner)
-        b_layout.setContentsMargins(18, 14, 18, 14)
-        b_layout.setSpacing(14)
+        b_layout.setContentsMargins(20, 16, 20, 16)
+        b_layout.setSpacing(16)
 
         self.avatar = HeadphoneAvatar(52)
         b_layout.addWidget(self.avatar)
@@ -251,12 +251,13 @@ class MainWindow(QMainWindow):
         title_col.setSpacing(4)
         self.lbl_model = QLabel("WH-1000XM6")
         self.lbl_model.setObjectName("HeroTitle")
-        self.bat_badge = BatteryBadge()
+        self.bat_badge = BatteryRing()
         title_col.addWidget(self.lbl_model)
         title_col.addWidget(self.bat_badge)
         b_layout.addLayout(title_col, stretch=1)
 
         self.btn_device_menu = QPushButton("切换设备 ▾")
+        self.btn_device_menu.setObjectName("GhostBtn")
         self.btn_device_menu.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_device_menu.clicked.connect(self._show_device_menu)
 
@@ -277,7 +278,7 @@ class MainWindow(QMainWindow):
         self.nav_group.setExclusive(True)
 
         tab_titles = [
-            "降噪与音质 (ANC && EQ)",
+            "降噪与音质",
             "索尼智能控制",
             "Windows 联动增强",
             "协议日志",
@@ -315,22 +316,26 @@ class MainWindow(QMainWindow):
         page = QWidget()
         layout = QVBoxLayout(page)
         layout.setContentsMargins(0, 4, 4, 4)
-        layout.setSpacing(14)
+        layout.setSpacing(16)
 
         # 1. ANC / Ambient Sound Card
         anc_card = CardFrame("环境声音控制")
         mode_row = QHBoxLayout()
-        mode_row.setSpacing(10)
+        mode_row.setSpacing(0)
         self.nc_group = QButtonGroup(self)
         self.nc_group.setExclusive(True)
 
-        for label, mode in (
-            ("降噪 (ANC)", NoiseControlMode.NOISE_CANCELLING),
-            ("环境声 (通透)", NoiseControlMode.AMBIENT_SOUND),
-            ("关闭", NoiseControlMode.OFF),
+        for seg_idx, (label, mode) in enumerate(
+            (
+                ("降噪", NoiseControlMode.NOISE_CANCELLING),
+                ("环境声", NoiseControlMode.AMBIENT_SOUND),
+                ("关闭", NoiseControlMode.OFF),
+            )
         ):
             btn = QPushButton(label)
             btn.setObjectName("ModeCardBtn")
+            btn.setProperty("segment", ("first", "mid", "last")[seg_idx])
+            btn.setFixedHeight(58)
             btn.setCheckable(True)
             btn.setCursor(Qt.CursorShape.PointingHandCursor)
             self.nc_group.addButton(btn, int(mode))
@@ -350,7 +355,7 @@ class MainWindow(QMainWindow):
         self.sw_voice_focus = ToggleSwitch()
         self.sw_voice_focus.toggled_by_user.connect(lambda _v: self._apply_nc_asm())
         anc_card.body.addWidget(
-            SettingRow("关注语音 (Voice Focus)", "在环境声模式下抑制背景噪音并重点保留人声", self.sw_voice_focus)
+            SettingRow("关注语音", "在环境声模式下抑制背景噪音并重点保留人声", self.sw_voice_focus)
         )
         anc_card.add_divider()
 
@@ -362,7 +367,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(anc_card)
 
         # 2. Equalizer & Sound Quality Card
-        eq_card = CardFrame("10 段均衡器与声音增强 (EQ)")
+        eq_card = CardFrame("10 段均衡器与声音增强")
 
         # Preset chips row
         self.preset_bar = QHBoxLayout()
@@ -382,7 +387,7 @@ class MainWindow(QMainWindow):
         self.sw_dsee = ToggleSwitch()
         self.sw_dsee.toggled_by_user.connect(self._on_dsee_toggled)
         eq_card.body.addWidget(
-            SettingRow("DSEE Extreme 音质提升", "使用 AI 实时恢复压缩音源损失的高频细节", self.sw_dsee)
+            SettingRow("DSEE 音质提升", "使用 AI 实时恢复压缩音源损失的高频细节", self.sw_dsee)
         )
         eq_card.add_divider()
 
@@ -391,7 +396,7 @@ class MainWindow(QMainWindow):
         self.sw_ldac_priority.toggled_by_user.connect(self._on_quality_toggled)
         eq_card.body.addWidget(
             SettingRow(
-                "声音质量优先 (LDAC 高码率)",
+                "声音质量优先",
                 "开启后优先保证最高音频传输质量；关闭则切换为稳定连接优先",
                 self.sw_ldac_priority,
             )
@@ -425,7 +430,7 @@ class MainWindow(QMainWindow):
         page = QWidget()
         layout = QVBoxLayout(page)
         layout.setContentsMargins(0, 4, 4, 4)
-        layout.setSpacing(14)
+        layout.setSpacing(16)
 
         smart_card = CardFrame("智能聆听与多点连接")
 
@@ -433,7 +438,7 @@ class MainWindow(QMainWindow):
         self.sw_speak_to_chat.toggled_by_user.connect(self._on_speak_to_chat_toggled)
         smart_card.body.addWidget(
             SettingRow(
-                "智能免摘对话 (Speak-to-Chat)",
+                "智能免摘对话",
                 "检测到你开口说话时自动暂停媒体播放并切换至环境声模式",
                 self.sw_speak_to_chat,
             )
@@ -444,7 +449,7 @@ class MainWindow(QMainWindow):
         self.sw_multipoint.toggled_by_user.connect(self._on_multipoint_toggled)
         smart_card.body.addWidget(
             SettingRow(
-                "同时连接 2 台设备 (多点连接)",
+                "同时连接 2 台设备",
                 "允许 WH-1000XM6 同时保持与电脑和手机的双设备蓝牙连接",
                 self.sw_multipoint,
             )
@@ -454,19 +459,19 @@ class MainWindow(QMainWindow):
         self.sw_cinema = ToggleSwitch()
         self.sw_cinema.toggled_by_user.connect(self._on_cinema_toggled)
         smart_card.body.addWidget(
-            SettingRow("影院声场模式 (Cinema Upmix)", "开启索尼 360 空间环绕影院立体声场效果", self.sw_cinema)
+            SettingRow("影院声场模式", "开启索尼 360 空间环绕影院立体声场效果", self.sw_cinema)
         )
         smart_card.add_divider()
 
         self.lbl_paired = QLabel("正在读取已配对设备...")
-        self.lbl_paired.setStyleSheet("color: #38bdf8; font-size: 12px; font-weight: 500;")
+        self.lbl_paired.setStyleSheet("color: #D4B16A; font-size: 12px; font-weight: 500;")
         smart_card.body.addWidget(
             SettingRow("已配对多点设备列表", "耳机当前记忆的蓝牙主机及活动连接状态", self.lbl_paired)
         )
         smart_card.add_divider()
 
         self.lbl_auto_power = QLabel("已启用佩戴检测自动关机")
-        self.lbl_auto_power.setStyleSheet("color: #9ca3af; font-size: 12px;")
+        self.lbl_auto_power.setStyleSheet("color: #A9ADB3; font-size: 12px;")
         smart_card.body.addWidget(
             SettingRow("自动关机策略", "取下耳机一段时间后自动关闭电源以节省电量", self.lbl_auto_power)
         )
@@ -513,7 +518,7 @@ class MainWindow(QMainWindow):
         page = QWidget()
         layout = QVBoxLayout(page)
         layout.setContentsMargins(0, 4, 4, 4)
-        layout.setSpacing(14)
+        layout.setSpacing(16)
 
         card = CardFrame("Windows 系统联动与自动化")
 
@@ -582,7 +587,7 @@ class MainWindow(QMainWindow):
         page = QWidget()
         layout = QVBoxLayout(page)
         layout.setContentsMargins(0, 4, 4, 4)
-        card = CardFrame("Sony Tandem V2 实时通信日志")
+        card = CardFrame("实时通信日志")
         self.txt_log = QTextEdit()
         self.txt_log.setObjectName("LogBox")
         self.txt_log.setReadOnly(True)
@@ -641,9 +646,9 @@ class MainWindow(QMainWindow):
     def _show_device_menu(self) -> None:
         menu = QMenu(self)
         menu.setStyleSheet(
-            "QMenu { background-color: #1f232b; border: 1px solid #323846; color: #f0f3f8; padding: 4px; }"
+            "QMenu { background-color: #2A2D32; border: 1px solid #3A3D42; color: #FFFFFF; padding: 4px; }"
             "QMenu::item { padding: 6px 16px; border-radius: 4px; }"
-            "QMenu::item:selected { background-color: #38bdf8; color: #0f172a; }"
+            "QMenu::item:selected { background-color: #D4B16A; color: #1E1F22; }"
         )
         for d in self._discovered_devices:
             act = menu.addAction(f"{d.name}  ({d.address})")
