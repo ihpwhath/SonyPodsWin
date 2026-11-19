@@ -1,0 +1,85 @@
+# Build WinUI 3 (unpackaged, self-contained, single-file) on GitHub Actions
+#
+# 放置位置：仓库根目录 .github/workflows/build-winui.yml
+# 说明见同目录 NOTES.md（本地 ~/workspace/sonypods-win/winui-ci/）。
+#
+# 前置条件（csproj 侧，缺一不可，见 NOTES.md 第 3 节）：
+#   <WindowsPackageType>None</WindowsPackageType>
+#   <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+#   <SelfContained>true</SelfContained>
+#   <EnableMsixTooling>true</EnableMsixTooling>
+#   <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+#   <PublishSingleFile>true</PublishSingleFile>
+# 且 PackageReference Microsoft.WindowsAppSDK 版本 >= 1.5（单文件支持的最低版本）。
+#
+# 注意：PROJECT_PATH 需与 Gemini 第一阶段产出的 csproj 实际路径对齐后再启用。
+
+name: Build WinUI Executable
+
+on:
+  push:
+    branches: [ winui ]
+  workflow_dispatch:
+
+env:
+  # TODO: 改成 WinUI 工程在仓库里的实际路径（Gemini 第一阶段落地后确认）
+  PROJECT_PATH: winui/SonyPodsWin/SonyPodsWin.csproj
+  CONFIGURATION: Release
+  RID: win-x64
+  PUBLISH_DIR: publish/win-x64
+
+jobs:
+  build-winui:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      # WinUI 的还原必须带 RID，否则 publish 阶段会缺运行时资产
+      - name: Restore (with RID)
+        run: dotnet restore "${{ env.PROJECT_PATH }}" -r ${{ env.RID }}
+
+      # 主路线：dotnet publish 单文件自包含发布。
+      # 关键属性大多已写在 csproj 里，这里再显式传一遍，防止 csproj 漏写时静默产出多文件目录。
+      - name: Publish single-file (unpackaged, self-contained)
+        run: >
+          dotnet publish "${{ env.PROJECT_PATH }}"
+          -c ${{ env.CONFIGURATION }}
+          -r ${{ env.RID }}
+          --self-contained true
+          --no-restore
+          -p:PublishSingleFile=true
+          -p:IncludeAllContentForSelfExtract=true
+          -p:WindowsPackageType=None
+          -o "${{ env.PUBLISH_DIR }}"
+
+      # 兜底路线（默认禁用）：若 dotnet publish 在 XAML 编译 / PRI 生成上翻车，
+      # 改用微软官方 CI 文档给 unpackaged 应用的 msbuild /t:Publish 路线。
+      # 用法：把下面这一步的 if 改成 if: failure()，并删掉/注释上面的 publish 步。
+      # - name: Publish via MSBuild (fallback, official CI doc route)
+      #   if: false
+      #   uses: microsoft/setup-msbuild@v2
+      # - name: MSBuild Publish
+      #   if: false
+      #   run: >
+      #     msbuild "${{ env.PROJECT_PATH }}" /t:Publish
+      #     /p:Configuration=${{ env.CONFIGURATION }} /p:Platform=x64
+      #     /p:RuntimeIdentifier=${{ env.RID }}
+
+      - name: Zip publish output
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "${{ env.PUBLISH_DIR }}/*" `
+            -DestinationPath "SonyPodsWin-WinUI-win-x64.zip" -Force
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SonyPodsWin-WinUI-win-x64
+          path: SonyPodsWin-WinUI-win-x64.zip
