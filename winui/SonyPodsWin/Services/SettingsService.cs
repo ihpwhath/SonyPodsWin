@@ -55,7 +55,7 @@ public sealed class SettingsService
                 LastName: string.IsNullOrWhiteSpace(dto.LastName) ? "WH-1000XM6" : dto.LastName,
                 LastAddress: string.IsNullOrWhiteSpace(dto.LastAddress) ? null : dto.LastAddress,
                 ShowPopupOnConnect: dto.ShowPopupOnConnect ?? true,
-                AutoReconnect: dto.AutoReconnect ?? true,
+                AutoReconnect: false,
                 AutoPlay: dto.AutoPlay ?? false,
                 AutoPause: dto.AutoPause ?? true,
                 DefaultVolume: dto.DefaultVolume ?? 54,

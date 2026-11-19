@@ -134,4 +134,12 @@ public sealed partial class ProtocolLogPage : Page
     {
         _state?.ClearLogs();
     }
+
+    private void OnStopAndHideClicked(object sender, RoutedEventArgs e)
+    {
+        if (_state is not null)
+        {
+            _state.IsDeveloperLogEnabled = false;
+        }
+    }
 }

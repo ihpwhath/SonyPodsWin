@@ -789,7 +789,7 @@ public static class Table1
             {
                 controlMode = NoiseControlMode.AmbientSound;
             }
-            else if (modeByte == NcAsmModeNc)
+            else if (modeByte == NcAsmModeNc || totalEffect == NcAsmOn)
             {
                 controlMode = NoiseControlMode.NoiseCancelling;
             }
@@ -820,7 +820,7 @@ public static class Table1
             {
                 controlMode = NoiseControlMode.AmbientSound;
             }
-            else if (modeByte == NcAsmModeNc)
+            else if (modeByte == NcAsmModeNc || totalEffect == NcAsmOn)
             {
                 controlMode = NoiseControlMode.NoiseCancelling;
             }

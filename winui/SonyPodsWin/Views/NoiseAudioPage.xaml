@@ -14,10 +14,10 @@
 
         <!-- A. 固定顶部设备信息区（高约 120px，Border + 6 列 Grid） -->
         <Border Grid.Row="0" Style="{StaticResource CardBorderStyle}" MinHeight="116">
-            <Grid ColumnSpacing="16" VerticalAlignment="Center">
+            <Grid ColumnSpacing="14" VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" MinWidth="156" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
@@ -42,6 +42,7 @@
                         x:Name="ModelNameText"
                         Text="WH-1000XM6"
                         Style="{StaticResource DeviceTitleStyle}"
+                        TextWrapping="NoWrap"
                         TextTrimming="CharacterEllipsis" />
                     <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                         <Ellipse x:Name="StatusDot" Width="8" Height="8" Fill="{StaticResource TextMutedBrush}" />
@@ -72,13 +73,13 @@
                 </Grid>
 
                 <!-- 列 3：音频编码 -->
-                <StackPanel Grid.Column="3" VerticalAlignment="Center" Spacing="2" MinWidth="68">
+                <StackPanel Grid.Column="3" VerticalAlignment="Center" Spacing="2" MinWidth="52">
                     <TextBlock Text="编码" Style="{StaticResource CaptionCopyStyle}" />
                     <TextBlock x:Name="CodecText" Text="--" Style="{StaticResource ControlTitleStyle}" FontSize="15" />
                 </StackPanel>
 
                 <!-- 列 4：固件版本 -->
-                <StackPanel Grid.Column="4" VerticalAlignment="Center" Spacing="2" MinWidth="68">
+                <StackPanel Grid.Column="4" VerticalAlignment="Center" Spacing="2" MinWidth="56">
                     <TextBlock Text="固件版本" Style="{StaticResource CaptionCopyStyle}" />
                     <TextBlock x:Name="FirmwareText" Text="--" Style="{StaticResource ControlTitleStyle}" FontSize="15" />
                 </StackPanel>
@@ -162,8 +163,8 @@
                     </Grid>
                 </Border>
 
-                <!-- C & D. 环境声音控制卡片 -->
-                <Border Style="{StaticResource CardBorderStyle}">
+                <!-- C & D. 环境声音控制卡片（仅在「环境声」模式下显示） -->
+                <Border x:Name="AmbientControlCard" Style="{StaticResource CardBorderStyle}">
                     <StackPanel Spacing="12">
                         <TextBlock Text="环境声音控制" Style="{StaticResource CardTitleStyle}" />
 

@@ -12,6 +12,27 @@
                 <TextBlock Text="Windows 系统联动与自动化（本地生效，不下发耳机配置）" Style="{StaticResource CaptionCopyStyle}" />
             </StackPanel>
 
+            <!-- 0. 开机自动启动（驻留系统托盘） -->
+            <Border Style="{StaticResource SettingCardStyle}">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="开机自动启动" Style="{StaticResource ControlTitleStyle}" />
+                        <TextBlock Text="随 Windows 登录自动启动并静默驻留在系统托盘（不自动弹窗、不抢蓝牙连接）" Style="{StaticResource CaptionCopyStyle}" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <ToggleSwitch
+                        x:Name="RunOnStartupSwitch"
+                        Grid.Column="1"
+                        OnContent="开"
+                        OffContent="关"
+                        VerticalAlignment="Center"
+                        Toggled="OnRunOnStartupToggled" />
+                </Grid>
+            </Border>
+
             <!-- 1. 自动播放（默认关） -->
             <Border Style="{StaticResource SettingCardStyle}">
                 <Grid ColumnSpacing="16">
@@ -88,7 +109,7 @@
                 </Grid>
             </Border>
 
-            <!-- 4. 连接时弹出电量卡片（默认开） -->
+            <!-- 4. 连接时发送系统通知（默认开） -->
             <Border Style="{StaticResource SettingCardStyle}">
                 <Grid ColumnSpacing="16">
                     <Grid.ColumnDefinitions>
@@ -96,8 +117,8 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
-                        <TextBlock Text="连接时弹出电量卡片" Style="{StaticResource ControlTitleStyle}" />
-                        <TextBlock Text="耳机连接成功 900ms 后在桌面右下角弹出状态卡片" Style="{StaticResource CaptionCopyStyle}" TextWrapping="Wrap" />
+                        <TextBlock Text="连接时弹出系统通知" Style="{StaticResource ControlTitleStyle}" />
+                        <TextBlock Text="耳机连接成功后通过 Windows 通知中心提示当前电量与模式" Style="{StaticResource CaptionCopyStyle}" TextWrapping="Wrap" />
                     </StackPanel>
                     <ToggleSwitch
                         x:Name="PopupOnConnectSwitch"
@@ -106,27 +127,6 @@
                         OffContent="关"
                         VerticalAlignment="Center"
                         Toggled="OnPopupOnConnectToggled" />
-                </Grid>
-            </Border>
-
-            <!-- 5. 异常断线自动重连（默认开） -->
-            <Border Style="{StaticResource SettingCardStyle}">
-                <Grid ColumnSpacing="16">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
-                        <TextBlock Text="异常断线自动重连" Style="{StaticResource ControlTitleStyle}" />
-                        <TextBlock Text="非手动断开时每 8 秒自动尝试重新连接上次耳机" Style="{StaticResource CaptionCopyStyle}" TextWrapping="Wrap" />
-                    </StackPanel>
-                    <ToggleSwitch
-                        x:Name="AutoReconnectSwitch"
-                        Grid.Column="1"
-                        OnContent="开"
-                        OffContent="关"
-                        VerticalAlignment="Center"
-                        Toggled="OnAutoReconnectToggled" />
                 </Grid>
             </Border>
 

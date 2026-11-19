@@ -5,3 +5,6 @@ build/
 dist/
 *.spec
 .pytest_cache/
+winui/**/bin/
+winui/**/obj/
+publish/

@@ -5,12 +5,16 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.Win32;
 using SonyPodsWin.ViewModels;
 
 namespace SonyPodsWin.Views;
 
 public sealed partial class WindowsIntegrationPage : Page
 {
+    private const string StartupRunRegistryKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
+    private const string StartupValueName = "SonyPodsWin";
+
     private AppStateViewModel? _state;
     private bool _syncingUi;
 
@@ -60,18 +64,69 @@ public sealed partial class WindowsIntegrationPage : Page
         _syncingUi = true;
         try
         {
+            RunOnStartupSwitch.IsOn = IsRunOnStartupEnabled();
             AutoPlaySwitch.IsOn = _state.AutoPlay;
             AutoPauseSwitch.IsOn = _state.AutoPause;
             DefaultVolumeSlider.Value = _state.DefaultVolume;
             DefaultVolumeText.Text = $"{_state.DefaultVolume}%";
             PopupOnConnectSwitch.IsOn = _state.ShowPopupOnConnect;
-            AutoReconnectSwitch.IsOn = _state.AutoReconnect;
             LowBatterySlider.Value = _state.LowBatteryThreshold;
             LowBatteryText.Text = $"{_state.LowBatteryThreshold}%";
         }
         finally
         {
             _syncingUi = false;
+        }
+    }
+
+    private void OnRunOnStartupToggled(object sender, RoutedEventArgs e)
+    {
+        if (_syncingUi)
+        {
+            return;
+        }
+
+        SetRunOnStartup(RunOnStartupSwitch.IsOn);
+    }
+
+    private static bool IsRunOnStartupEnabled()
+    {
+        try
+        {
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(StartupRunRegistryKey, writable: false);
+            return key?.GetValue(StartupValueName) is string val && !string.IsNullOrWhiteSpace(val);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static void SetRunOnStartup(bool enabled)
+    {
+        try
+        {
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(StartupRunRegistryKey, writable: true);
+            if (key is null)
+            {
+                return;
+            }
+
+            if (enabled)
+            {
+                string? exePath = Environment.ProcessPath;
+                if (!string.IsNullOrWhiteSpace(exePath))
+                {
+                    key.SetValue(StartupValueName, $"\"{exePath}\" --tray");
+                }
+            }
+            else
+            {
+                key.DeleteValue(StartupValueName, throwOnMissingValue: false);
+            }
+        }
+        catch
+        {
         }
     }
 
@@ -110,14 +165,6 @@ public sealed partial class WindowsIntegrationPage : Page
         if (!_syncingUi && _state is not null)
         {
             _state.ShowPopupOnConnect = PopupOnConnectSwitch.IsOn;
-        }
-    }
-
-    private void OnAutoReconnectToggled(object sender, RoutedEventArgs e)
-    {
-        if (!_syncingUi && _state is not null)
-        {
-            _state.AutoReconnect = AutoReconnectSwitch.IsOn;
         }
     }
 

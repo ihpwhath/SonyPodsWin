@@ -134,8 +134,9 @@ public sealed class AppStateViewModel : INotifyPropertyChanged
     private bool _autoPause = true;
     private int _defaultVolume = 54;
     private bool _showPopupOnConnect = true;
-    private bool _autoReconnect = true;
+    private bool _autoReconnect = false;
     private int _lowBatteryThreshold = 30;
+    private bool _isDeveloperLogEnabled = false;
 
     public AppStateViewModel(BleService ble)
     {
@@ -472,6 +473,21 @@ public sealed class AppStateViewModel : INotifyPropertyChanged
         }
     }
 
+    public bool IsDeveloperLogEnabled
+    {
+        get => _isDeveloperLogEnabled;
+        set
+        {
+            if (SetField(ref _isDeveloperLogEnabled, value))
+            {
+                if (!value)
+                {
+                    LogEntries.Clear();
+                }
+            }
+        }
+    }
+
     // ── 第三阶段持久化接口 ────────────────────────────────────────────────────
 
     public SettingsSnapshot ExportSettings() => new(
@@ -490,8 +506,8 @@ public sealed class AppStateViewModel : INotifyPropertyChanged
         ModelName = string.IsNullOrWhiteSpace(snapshot.LastName) ? "WH-1000XM6" : snapshot.LastName;
         CurrentAddress = snapshot.LastAddress;
         SetField(ref _showPopupOnConnect, snapshot.ShowPopupOnConnect, nameof(ShowPopupOnConnect));
-        SetField(ref _autoReconnect, snapshot.AutoReconnect, nameof(AutoReconnect));
-        _ble.AutoReconnect = _autoReconnect;
+        SetField(ref _autoReconnect, false, nameof(AutoReconnect));
+        _ble.AutoReconnect = false;
         SetField(ref _autoPlay, snapshot.AutoPlay, nameof(AutoPlay));
         SetField(ref _autoPause, snapshot.AutoPause, nameof(AutoPause));
         SetField(ref _defaultVolume, snapshot.DefaultVolume, nameof(DefaultVolume));
@@ -763,10 +779,6 @@ public sealed class AppStateViewModel : INotifyPropertyChanged
         Send(Table1.BuildGetBatteryStatus(PowerInquiredType.Battery));
         Send(Table1.BuildGetAudioCodecStatus());
         Send(Table1.BuildGetUpscalingEffectStatus());
-        Send(Table1.BuildGetNcAsmParam(_ncType));
-        Send(Table1.BuildGetEqEbbCapability(_eqType));
-        Send(Table1.BuildGetEqEbbExtendedInfo(_eqType));
-        Send(Table1.BuildGetEqEbbParam(_eqType));
         Send(Table1.BuildGetUpscaling(_upscalingInq));
         Send(Table1.BuildGetConnectionQuality());
         Send(Table1.BuildGetSpeakToChatParam());
@@ -914,6 +926,10 @@ public sealed class AppStateViewModel : INotifyPropertyChanged
                     _eqType = EqEbbInquiredType.PresetEq;
                 }
 
+                Send(Table1.BuildGetNcAsmParam(_ncType));
+                Send(Table1.BuildGetEqEbbCapability(_eqType));
+                Send(Table1.BuildGetEqEbbExtendedInfo(_eqType));
+                Send(Table1.BuildGetEqEbbParam(_eqType));
                 break;
 
             case BatteryResponse bat:
@@ -1097,6 +1113,11 @@ public sealed class AppStateViewModel : INotifyPropertyChanged
 
     private void AppendLog(ProtocolLogLevel level, string source, string message)
     {
+        if (!_isDeveloperLogEnabled)
+        {
+            return;
+        }
+
         LogEntries.Add(new ProtocolLogEntry(DateTime.Now, level, source, message));
         if (LogEntries.Count > MaxLogEntries)
         {

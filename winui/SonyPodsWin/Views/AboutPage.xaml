@@ -31,10 +31,21 @@
                                 FontSize="22"
                                 FontWeight="Bold"
                                 Foreground="{StaticResource TextPrimaryBrush}" />
-                            <TextBlock
-                                Text="版本 0.1.0"
+                            <Button
+                                x:Name="VersionButton"
+                                Content="版本 0.1.0"
                                 FontSize="12"
-                                Foreground="{StaticResource TextMutedBrush}" />
+                                Padding="0,2"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Foreground="{StaticResource TextMutedBrush}"
+                                HorizontalAlignment="Left"
+                                Click="OnVersionClicked" />
+                            <TextBlock
+                                x:Name="DevModeHintText"
+                                Visibility="Collapsed"
+                                FontSize="12"
+                                Foreground="{StaticResource AccentBrush}" />
                         </StackPanel>
                     </StackPanel>
 

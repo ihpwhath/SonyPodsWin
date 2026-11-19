@@ -21,6 +21,7 @@ public sealed class TrayIconService : IDisposable
     private const uint WmLButtonDblClk = 0x0203;
     private const uint WmRButtonUp = 0x0205;
     private const uint WmContextMenu = 0x007B;
+    private const uint NinBalloonUserClick = 0x0405;
 
     private const uint NimAdd = 0x00000000;
     private const uint NimModify = 0x00000001;
@@ -30,7 +31,9 @@ public sealed class TrayIconService : IDisposable
     private const uint NifIcon = 0x00000002;
     private const uint NifTip = 0x00000004;
     private const uint NifInfo = 0x00000010;
+    private const uint NiifInfo = 0x00000001;
     private const uint NiifWarning = 0x00000002;
+    private const uint NiifUser = 0x00000004;
 
     private const uint MfString = 0x00000000;
     private const uint MfSeparator = 0x00000800;
@@ -116,6 +119,25 @@ public sealed class TrayIconService : IDisposable
     }
 
     /// <summary>
+    /// 通过 Windows 系统原生通知中心弹出设备连接/状态通知。
+    /// </summary>
+    public void ShowInfoNotification(string title, string message, uint timeoutMs = 5000)
+    {
+        if (_disposed || !_iconAdded)
+        {
+            return;
+        }
+
+        NOTIFYICONDATAW data = CreateBaseData();
+        data.uFlags = NifInfo;
+        data.szInfoTitle = Truncate(title, 63);
+        data.szInfo = Truncate(message, 255);
+        data.dwInfoFlags = NiifInfo;
+        data.uTimeoutOrVersion = timeoutMs;
+        Shell_NotifyIconW(NimModify, ref data);
+    }
+
+    /// <summary>
     /// 通过系统托盘气泡/通知中心弹出低电量 Warning 提醒（等价于 Python tray.showMessage）。
     /// </summary>
     public void ShowWarningNotification(string title, string message, uint timeoutMs = 5000)
@@ -161,7 +183,7 @@ public sealed class TrayIconService : IDisposable
         if (msg == WmTrayCallback)
         {
             uint mouseMsg = (uint)(lParam.ToInt64() & 0xFFFF);
-            if (mouseMsg == WmLButtonUp)
+            if (mouseMsg == WmLButtonUp || mouseMsg == NinBalloonUserClick)
             {
                 _dispatcher.TryEnqueue(() => TrayLeftClicked?.Invoke(this, EventArgs.Empty));
             }

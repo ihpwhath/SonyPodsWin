@@ -14,7 +14,22 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="协议日志" Style="{StaticResource PageTitleStyle}" />
+        <Grid Grid.Row="0" ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="协议日志" Style="{StaticResource PageTitleStyle}" />
+                <TextBlock Text="开发者调试模式 · 隐藏后在「关于」页面连续点击 5 次版本号可再次显示" Style="{StaticResource CaptionCopyStyle}" />
+            </StackPanel>
+            <Button
+                Grid.Column="1"
+                Content="停止并隐藏"
+                Style="{StaticResource DangerButtonStyle}"
+                VerticalAlignment="Center"
+                Click="OnStopAndHideClicked" />
+        </Grid>
 
         <!-- 筛选与操作栏 -->
         <Grid Grid.Row="1" ColumnSpacing="10">

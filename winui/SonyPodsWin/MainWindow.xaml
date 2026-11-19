@@ -8,15 +8,42 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <NavigationView
-        x:Name="NavView"
-        PaneDisplayMode="Left"
-        IsBackButtonVisible="Collapsed"
-        IsSettingsVisible="False"
-        CompactPaneLength="48"
-        OpenPaneLength="220"
-        PaneTitle="SonyPods"
-        SelectionChanged="OnNavigationChanged">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="36" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="AppTitleBar" Grid.Row="0" Background="Transparent" Padding="14,0">
+            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <Border Width="20" Height="20" CornerRadius="5" Background="{StaticResource AccentBrush}">
+                    <TextBlock
+                        Text="S"
+                        FontSize="12"
+                        FontWeight="Bold"
+                        Foreground="{StaticResource AccentTextOnBrush}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center" />
+                </Border>
+                <TextBlock
+                    Text="SonyPods"
+                    FontSize="12"
+                    FontWeight="SemiBold"
+                    Foreground="{StaticResource TextPrimaryBrush}"
+                    VerticalAlignment="Center" />
+            </StackPanel>
+        </Grid>
+
+        <NavigationView
+            x:Name="NavView"
+            Grid.Row="1"
+            PaneDisplayMode="Left"
+            IsPaneToggleButtonVisible="False"
+            IsBackButtonVisible="Collapsed"
+            IsSettingsVisible="False"
+            CompactPaneLength="48"
+            OpenPaneLength="210"
+            SelectionChanged="OnNavigationChanged">
 
         <NavigationView.MenuItems>
             <NavigationViewItem Content="降噪与音质" Tag="NoiseAudio">
@@ -34,7 +61,11 @@
                     <FontIcon Glyph="&#xE7F4;" />
                 </NavigationViewItem.Icon>
             </NavigationViewItem>
-            <NavigationViewItem Content="协议日志" Tag="ProtocolLog">
+            <NavigationViewItem
+                x:Name="ProtocolLogNavItem"
+                Content="协议日志"
+                Tag="ProtocolLog"
+                Visibility="Collapsed">
                 <NavigationViewItem.Icon>
                     <FontIcon Glyph="&#xE756;" />
                 </NavigationViewItem.Icon>
@@ -46,6 +77,7 @@
             </NavigationViewItem>
         </NavigationView.MenuItems>
 
-        <Frame x:Name="ContentFrame" />
-    </NavigationView>
+            <Frame x:Name="ContentFrame" />
+        </NavigationView>
+    </Grid>
 </Window>

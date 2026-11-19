@@ -105,6 +105,9 @@ public sealed partial class NoiseAudioPage : Page
             ConnectButton.IsEnabled = _state.IsConnectButtonEnabled;
 
             UpdateNcSegmentStyles(_state.NoiseControlMode);
+            AmbientControlCard.Visibility = _state.NoiseControlMode == NoiseControlMode.AmbientSound
+                ? Visibility.Visible
+                : Visibility.Collapsed;
 
             AmbientLevelSlider.Value = _state.AmbientLevel;
             AmbientLevelText.Text = $"{_state.AmbientLevel} 级";
