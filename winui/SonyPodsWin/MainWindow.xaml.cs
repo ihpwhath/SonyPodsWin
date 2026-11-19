@@ -79,14 +79,23 @@ public sealed partial class MainWindow : Window
 
     private void ConfigureWindowSizing()
     {
+        IntPtr hWnd = WindowNative.GetWindowHandle(this);
+        uint dpi = hWnd != IntPtr.Zero ? GetDpiForWindow(hWnd) : 96u;
+        double scale = dpi > 0 ? dpi / 96.0 : 1.0;
+
         if (AppWindow.Presenter is OverlappedPresenter presenter)
         {
-            presenter.PreferredMinimumWidth = 900;
-            presenter.PreferredMinimumHeight = 600;
+            presenter.PreferredMinimumWidth = (int)Math.Round(900 * scale);
+            presenter.PreferredMinimumHeight = (int)Math.Round(600 * scale);
         }
 
-        AppWindow.Resize(new SizeInt32(980, 640));
+        AppWindow.Resize(new SizeInt32(
+            (int)Math.Round(980 * scale),
+            (int)Math.Round(640 * scale)));
     }
+
+    [DllImport("user32.dll")]
+    private static extern uint GetDpiForWindow(IntPtr hwnd);
 
     private void OnAppWindowClosing(AppWindow sender, AppWindowClosingEventArgs args)
     {

@@ -147,17 +147,17 @@
                         <!-- 播放控制按钮行（走耳机协议 PlaybackControl） -->
                         <StackPanel Spacing="8">
                             <TextBlock Text="耳机播放控制" Style="{StaticResource ControlTitleStyle}" />
-                            <Grid ColumnSpacing="8">
+                            <Grid ColumnSpacing="6">
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1.15*" />
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="1.15*" />
                                 </Grid.ColumnDefinitions>
-                                <Button Grid.Column="0" Content="⏮ 上一曲" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Stretch" Padding="6,8" Click="OnPrevTrackClicked" />
-                                <Button Grid.Column="1" Content="▶ 播放" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Stretch" Padding="6,8" Click="OnPlayClicked" />
-                                <Button Grid.Column="2" Content="⏸ 暂停" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Stretch" Padding="6,8" Click="OnPauseClicked" />
-                                <Button Grid.Column="3" Content="⏭ 下一曲" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Stretch" Padding="6,8" Click="OnNextTrackClicked" />
+                                <Button Grid.Column="0" Content="⏮ 上一曲" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Stretch" MinWidth="0" Padding="4,8" FontSize="12" Click="OnPrevTrackClicked" />
+                                <Button Grid.Column="1" Content="▶ 播放" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Stretch" MinWidth="0" Padding="4,8" FontSize="12" Click="OnPlayClicked" />
+                                <Button Grid.Column="2" Content="⏸ 暂停" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Stretch" MinWidth="0" Padding="4,8" FontSize="12" Click="OnPauseClicked" />
+                                <Button Grid.Column="3" Content="⏭ 下一曲" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Stretch" MinWidth="0" Padding="4,8" FontSize="12" Click="OnNextTrackClicked" />
                             </Grid>
                         </StackPanel>
 
