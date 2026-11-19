@@ -18,6 +18,7 @@ public sealed partial class SonySmartPage : Page
     public SonySmartPage()
     {
         InitializeComponent();
+        ScrollViewerWheelHelper.Attach(PageScrollViewer, () => _syncingUi);
     }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)

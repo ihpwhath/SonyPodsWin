@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     NavigationCacheMode="Required">
 
-    <ScrollViewer Padding="24" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer x:Name="PageScrollViewer" Padding="24" VerticalScrollBarVisibility="Auto">
         <StackPanel Spacing="16" Padding="0,0,4,12">
             <TextBlock Text="索尼智能控制" Style="{StaticResource PageTitleStyle}" />
 

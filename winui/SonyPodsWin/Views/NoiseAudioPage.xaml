@@ -101,7 +101,7 @@
         </Border>
 
         <!-- 下方主内容滚动区 -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer x:Name="PageScrollViewer" Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel Spacing="16" Padding="0,0,4,12">
 
                 <!-- B. 降噪模式：水平三选（高 52px、均分宽度、选中香槟金底深字） -->

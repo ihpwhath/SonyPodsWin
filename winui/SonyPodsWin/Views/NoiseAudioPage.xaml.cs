@@ -22,6 +22,7 @@ public sealed partial class NoiseAudioPage : Page
     public NoiseAudioPage()
     {
         InitializeComponent();
+        ScrollViewerWheelHelper.Attach(PageScrollViewer, () => _syncingUi);
         EqGraph.BandsReleased += OnEqGraphBandsReleased;
     }
 

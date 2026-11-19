@@ -11,6 +11,7 @@ public sealed partial class AboutPage : Page
     public AboutPage()
     {
         InitializeComponent();
+        ScrollViewerWheelHelper.Attach(PageScrollViewer);
     }
 
     private async void OnZanshangExpanding(Expander sender, ExpanderExpandingEventArgs args)

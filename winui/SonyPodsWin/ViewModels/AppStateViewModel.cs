@@ -917,15 +917,18 @@ public sealed class AppStateViewModel : INotifyPropertyChanged
                 break;
 
             case BatteryResponse bat:
-                if (bat.Kind is PowerInquiredType.Battery or PowerInquiredType.LeftRightBattery or PowerInquiredType.CradleBattery
+                if ((bat.Kind is PowerInquiredType.Battery or PowerInquiredType.LeftRightBattery or PowerInquiredType.CradleBattery)
                     && bat.Levels.Count > 0 && bat.Levels[0].HasValue)
                 {
                     int pct = bat.Levels[0]!.Value;
-                    BatteryPercent = pct;
-                    if (pct <= _lowBatteryThreshold && !_lowBatteryNotified)
+                    if (pct > 0)
                     {
-                        _lowBatteryNotified = true;
-                        LowBatteryAlertRequested?.Invoke(this, (_modelName, pct));
+                        BatteryPercent = pct;
+                        if (pct <= _lowBatteryThreshold && !_lowBatteryNotified)
+                        {
+                            _lowBatteryNotified = true;
+                            LowBatteryAlertRequested?.Invoke(this, (_modelName, pct));
+                        }
                     }
                 }
 

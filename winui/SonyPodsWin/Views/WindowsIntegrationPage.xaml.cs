@@ -17,6 +17,7 @@ public sealed partial class WindowsIntegrationPage : Page
     public WindowsIntegrationPage()
     {
         InitializeComponent();
+        ScrollViewerWheelHelper.Attach(PageScrollViewer, () => _syncingUi);
     }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)

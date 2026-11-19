@@ -603,8 +603,19 @@ public static class Table1
             }
             else if (kind == PowerInquiredType.LeftRightBattery)
             {
-                int? lVal = payload.Length >= 2 ? PctOrNull(payload[1]) : null;
-                int? rVal = payload.Length >= 4 ? PctOrNull(payload[3]) : null;
+                int? lVal;
+                int? rVal;
+                if (code == 0x09 && payload.Length >= 7)
+                {
+                    lVal = PctOrNull(payload[5]);
+                    rVal = PctOrNull(payload[6]);
+                }
+                else
+                {
+                    lVal = payload.Length >= 2 ? PctOrNull(payload[1]) : null;
+                    rVal = payload.Length >= 4 ? PctOrNull(payload[3]) : null;
+                }
+
                 levels.Add(lVal);
                 levels.Add(rVal);
             }
