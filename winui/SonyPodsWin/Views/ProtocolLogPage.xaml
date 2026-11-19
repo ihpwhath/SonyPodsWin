@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="SonyPodsWin.Views.ProtocolLogPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:SonyPodsWin.ViewModels"
+    NavigationCacheMode="Required">
+
+    <!-- 日志页不套 ScrollViewer，由 ListView 撑满剩余高度并实时滚动 -->
+    <Grid Padding="24" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="协议日志" Style="{StaticResource PageTitleStyle}" />
+
+        <!-- 筛选与操作栏 -->
+        <Grid Grid.Row="1" ColumnSpacing="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <ComboBox
+                x:Name="LevelFilterComboBox"
+                Grid.Column="0"
+                MinWidth="128"
+                SelectedIndex="0"
+                SelectionChanged="OnFilterChanged">
+                <ComboBoxItem Content="全部级别" Tag="All" />
+                <ComboBoxItem Content="信息 (INFO)" Tag="Info" />
+                <ComboBoxItem Content="帧收发 (FRAME)" Tag="Frame" />
+                <ComboBoxItem Content="错误 (ERROR)" Tag="Error" />
+            </ComboBox>
+
+            <TextBox
+                x:Name="SearchBox"
+                Grid.Column="1"
+                PlaceholderText="按关键字、命令字节或来源筛选..."
+                TextChanged="OnSearchTextChanged" />
+
+            <Button
+                Grid.Column="2"
+                Content="复制"
+                Style="{StaticResource SecondaryButtonStyle}"
+                Click="OnCopyLogsClicked" />
+
+            <Button
+                Grid.Column="3"
+                Content="清空"
+                Style="{StaticResource SecondaryButtonStyle}"
+                Click="OnClearLogsClicked" />
+        </Grid>
+
+        <!-- 实时通信日志列表 -->
+        <Border Grid.Row="2" Style="{StaticResource CardBorderStyle}" Padding="12">
+            <Grid RowSpacing="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="实时通信日志" Style="{StaticResource CardTitleStyle}" />
+
+                <ListView
+                    x:Name="LogListView"
+                    Grid.Row="1"
+                    SelectionMode="None"
+                    IsItemClickEnabled="False">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="MinHeight" Value="22" />
+                            <Setter Property="Padding" Value="4,2" />
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ProtocolLogEntry">
+                            <TextBlock
+                                Text="{x:Bind FormattedLine}"
+                                Style="{StaticResource LogMonospaceStyle}"
+                                TextWrapping="Wrap"
+                                IsTextSelectionEnabled="True" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>

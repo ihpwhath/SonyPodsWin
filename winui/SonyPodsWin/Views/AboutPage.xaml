@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="SonyPodsWin.Views.AboutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    NavigationCacheMode="Required">
+
+    <ScrollViewer Padding="24" VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="640" HorizontalAlignment="Center" Spacing="16" Padding="0,0,0,16">
+            <Border Style="{StaticResource CardBorderStyle}" Padding="24">
+                <StackPanel Spacing="14">
+                    <!-- 图标 + 软件名 + 版本 -->
+                    <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+                        <Border
+                            Width="56"
+                            Height="56"
+                            CornerRadius="12"
+                            Background="{StaticResource AccentBrush}">
+                            <TextBlock
+                                Text="S"
+                                FontSize="28"
+                                FontWeight="Bold"
+                                Foreground="{StaticResource AccentTextOnBrush}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+                        </Border>
+
+                        <StackPanel VerticalAlignment="Center" Spacing="2">
+                            <TextBlock
+                                Text="SonyPodsWin"
+                                FontSize="22"
+                                FontWeight="Bold"
+                                Foreground="{StaticResource TextPrimaryBrush}" />
+                            <TextBlock
+                                Text="版本 0.1.0"
+                                FontSize="12"
+                                Foreground="{StaticResource TextMutedBrush}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- 简介（一字不改取自 parity-checklist.md §1.5） -->
+                    <TextBlock
+                        Text="一款为索尼 WH-1000XM6 打造的 Windows 桌面控制工具：降噪与环境声、10 段均衡器、智能免摘、多点连接与 Windows 联动，都在这一个窗口里。"
+                        FontSize="14"
+                        Foreground="{StaticResource TextSecondaryBrush}"
+                        TextWrapping="Wrap" />
+
+                    <!-- 项目主页 GitHub HyperlinkButton -->
+                    <HyperlinkButton
+                        Content="https://github.com/ihpwhath/SonyPodsWin"
+                        NavigateUri="https://github.com/ihpwhath/SonyPodsWin"
+                        Foreground="{StaticResource AccentBrush}"
+                        Padding="0" />
+
+                    <Border Style="{StaticResource SectionDividerStyle}" Margin="0,4,0,4" />
+
+                    <!-- 赞赏区 Expander（默认折叠，展开解码内嵌 Base64 赞赏码） -->
+                    <Expander
+                        x:Name="ZanshangExpander"
+                        Header="请作者喝杯咖啡"
+                        IsExpanded="False"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Expanding="OnZanshangExpanding">
+                        <StackPanel Spacing="12" Padding="0,8,0,4">
+                            <Image
+                                x:Name="ZanshangQrImage"
+                                Width="220"
+                                Stretch="Uniform"
+                                HorizontalAlignment="Left" />
+                            <TextBlock
+                                Text="软件全部功能已完整开放，打赏纯属自愿；购买及售后问题请通过小红书联系。"
+                                FontSize="13"
+                                Foreground="{StaticResource TextSecondaryBrush}"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Expander>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

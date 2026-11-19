@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="SonyPodsWin.Views.WindowsIntegrationPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    NavigationCacheMode="Required">
+
+    <ScrollViewer Padding="24" VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="12" Padding="0,0,4,12">
+            <StackPanel Spacing="4" Margin="0,0,0,4">
+                <TextBlock Text="Windows 联动增强" Style="{StaticResource PageTitleStyle}" />
+                <TextBlock Text="Windows 系统联动与自动化（本地生效，不下发耳机配置）" Style="{StaticResource CaptionCopyStyle}" />
+            </StackPanel>
+
+            <!-- 1. 自动播放（默认关） -->
+            <Border Style="{StaticResource SettingCardStyle}">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="自动播放" Style="{StaticResource ControlTitleStyle}" />
+                        <TextBlock Text="耳机连接成功时自动发送系统媒体播放键" Style="{StaticResource CaptionCopyStyle}" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <ToggleSwitch
+                        x:Name="AutoPlaySwitch"
+                        Grid.Column="1"
+                        OnContent="开"
+                        OffContent="关"
+                        VerticalAlignment="Center"
+                        Toggled="OnAutoPlayToggled" />
+                </Grid>
+            </Border>
+
+            <!-- 2. 自动暂停（默认开） -->
+            <Border Style="{StaticResource SettingCardStyle}">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="自动暂停" Style="{StaticResource ControlTitleStyle}" />
+                        <TextBlock Text="耳机断开连接时自动发送系统媒体暂停键" Style="{StaticResource CaptionCopyStyle}" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <ToggleSwitch
+                        x:Name="AutoPauseSwitch"
+                        Grid.Column="1"
+                        OnContent="开"
+                        OffContent="关"
+                        VerticalAlignment="Center"
+                        Toggled="OnAutoPauseToggled" />
+                </Grid>
+            </Border>
+
+            <!-- 3. 默认音量（0-100，默认 54，0 表示不改动） -->
+            <Border Style="{StaticResource SettingCardStyle}">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="52" />
+                        <ColumnDefinition Width="220" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="默认音量" Style="{StaticResource ControlTitleStyle}" />
+                        <TextBlock Text="连接成功后自动设定耳机音量（设为 0 表示不改动）" Style="{StaticResource CaptionCopyStyle}" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <TextBlock
+                        x:Name="DefaultVolumeText"
+                        Grid.Column="1"
+                        Text="54%"
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource AccentBrush}"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center" />
+                    <Slider
+                        x:Name="DefaultVolumeSlider"
+                        Grid.Column="2"
+                        Minimum="0"
+                        Maximum="100"
+                        StepFrequency="1"
+                        Value="54"
+                        VerticalAlignment="Center"
+                        ValueChanged="OnDefaultVolumeValueChanged"
+                        PointerCaptureLost="OnDefaultVolumeReleased" />
+                </Grid>
+            </Border>
+
+            <!-- 4. 连接时弹出电量卡片（默认开） -->
+            <Border Style="{StaticResource SettingCardStyle}">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="连接时弹出电量卡片" Style="{StaticResource ControlTitleStyle}" />
+                        <TextBlock Text="耳机连接成功 900ms 后在桌面右下角弹出状态卡片" Style="{StaticResource CaptionCopyStyle}" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <ToggleSwitch
+                        x:Name="PopupOnConnectSwitch"
+                        Grid.Column="1"
+                        OnContent="开"
+                        OffContent="关"
+                        VerticalAlignment="Center"
+                        Toggled="OnPopupOnConnectToggled" />
+                </Grid>
+            </Border>
+
+            <!-- 5. 异常断线自动重连（默认开） -->
+            <Border Style="{StaticResource SettingCardStyle}">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="异常断线自动重连" Style="{StaticResource ControlTitleStyle}" />
+                        <TextBlock Text="非手动断开时每 8 秒自动尝试重新连接上次耳机" Style="{StaticResource CaptionCopyStyle}" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <ToggleSwitch
+                        x:Name="AutoReconnectSwitch"
+                        Grid.Column="1"
+                        OnContent="开"
+                        OffContent="关"
+                        VerticalAlignment="Center"
+                        Toggled="OnAutoReconnectToggled" />
+                </Grid>
+            </Border>
+
+            <!-- 6. 低电量提醒阈值（5-50%，默认 30%） -->
+            <Border Style="{StaticResource SettingCardStyle}">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="52" />
+                        <ColumnDefinition Width="220" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="低电量提醒阈值" Style="{StaticResource ControlTitleStyle}" />
+                        <TextBlock Text="耳机电量低于或等于该值时触发一次低电量提醒（5% - 50%）" Style="{StaticResource CaptionCopyStyle}" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <TextBlock
+                        x:Name="LowBatteryText"
+                        Grid.Column="1"
+                        Text="30%"
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource AccentBrush}"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center" />
+                    <Slider
+                        x:Name="LowBatterySlider"
+                        Grid.Column="2"
+                        Minimum="5"
+                        Maximum="50"
+                        StepFrequency="1"
+                        Value="30"
+                        VerticalAlignment="Center"
+                        ValueChanged="OnLowBatteryValueChanged"
+                        PointerCaptureLost="OnLowBatteryReleased" />
+                </Grid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

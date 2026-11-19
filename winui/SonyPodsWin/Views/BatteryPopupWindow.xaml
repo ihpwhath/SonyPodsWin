@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="SonyPodsWin.Views.BatteryPopupWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="SonyPods">
+
+    <!-- 350x182 悬浮电量卡片（rgba(42,45,50,248) 圆角 12px，悬停停表/离开 3 秒隐藏） -->
+    <Border
+        x:Name="PopupRootBorder"
+        Background="#F82A2D32"
+        BorderBrush="#FF3A3D42"
+        BorderThickness="1"
+        CornerRadius="12"
+        Padding="14,12"
+        PointerEntered="OnPopupPointerEntered"
+        PointerExited="OnPopupPointerExited">
+        <Grid RowSpacing="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- 头部：44px 耳机头像 + 型号 + 电量徽标 + 右上关闭钮 -->
+            <Grid Grid.Row="0" ColumnSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Border
+                    Grid.Column="0"
+                    Width="44"
+                    Height="44"
+                    CornerRadius="22"
+                    Background="{StaticResource SecondaryBackgroundBrush}"
+                    BorderBrush="{StaticResource CardBorderBrush}"
+                    BorderThickness="1"
+                    VerticalAlignment="Center">
+                    <FontIcon Glyph="&#xE7F6;" FontSize="20" Foreground="{StaticResource TextPrimaryBrush}" />
+                </Border>
+
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                    <TextBlock
+                        x:Name="PopupModelNameText"
+                        Text="WH-1000XM6"
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource TextPrimaryBrush}"
+                        TextTrimming="CharacterEllipsis" />
+
+                    <!-- 电量徽标（BatteryBadge：电量 + 24x12 电池轮廓与填充条 + 百分比 + 编码） -->
+                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <TextBlock Text="电量" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="1">
+                            <Border
+                                Width="24"
+                                Height="12"
+                                CornerRadius="2"
+                                BorderBrush="{StaticResource TextSecondaryBrush}"
+                                BorderThickness="1"
+                                Padding="1">
+                                <Border
+                                    x:Name="BatteryFillBar"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Stretch"
+                                    Width="1"
+                                    CornerRadius="1"
+                                    Background="{StaticResource AccentBrush}" />
+                            </Border>
+                            <Border
+                                Width="2"
+                                Height="6"
+                                CornerRadius="0,1,1,0"
+                                Background="{StaticResource TextSecondaryBrush}"
+                                VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <TextBlock
+                            x:Name="BatteryMetaText"
+                            Text="--%"
+                            FontSize="12"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource TextPrimaryBrush}"
+                            VerticalAlignment="Center" />
+                    </StackPanel>
+                </StackPanel>
+
+                <Button
+                    Grid.Column="2"
+                    Content="×"
+                    FontSize="15"
+                    Width="28"
+                    Height="28"
+                    Padding="0"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Foreground="{StaticResource TextSecondaryBrush}"
+                    VerticalAlignment="Top"
+                    Click="OnCloseClicked" />
+            </Grid>
+
+            <!-- NC 快捷三按钮：严格照 parity-checklist.md §4.2 顺序【降噪 / 关闭 / 环境声】（与主页顺序不同，不得改动） -->
+            <Grid Grid.Row="1" ColumnSpacing="6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Button
+                    x:Name="BtnPopupAnc"
+                    Grid.Column="0"
+                    Content="降噪"
+                    Height="34"
+                    HorizontalAlignment="Stretch"
+                    CornerRadius="6"
+                    BorderThickness="0"
+                    FontSize="13"
+                    FontWeight="SemiBold"
+                    Click="OnAncClicked" />
+
+                <Button
+                    x:Name="BtnPopupOff"
+                    Grid.Column="1"
+                    Content="关闭"
+                    Height="34"
+                    HorizontalAlignment="Stretch"
+                    CornerRadius="6"
+                    BorderThickness="0"
+                    FontSize="13"
+                    FontWeight="SemiBold"
+                    Click="OnOffClicked" />
+
+                <Button
+                    x:Name="BtnPopupAsm"
+                    Grid.Column="2"
+                    Content="环境声"
+                    Height="34"
+                    HorizontalAlignment="Stretch"
+                    CornerRadius="6"
+                    BorderThickness="0"
+                    FontSize="13"
+                    FontWeight="SemiBold"
+                    Click="OnAsmClicked" />
+            </Grid>
+
+            <!-- 底部右对齐链接 -->
+            <Button
+                Grid.Row="2"
+                Content="打开完整控制面板 ›"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Background="Transparent"
+                BorderThickness="0"
+                Padding="4,2"
+                FontSize="12"
+                Foreground="{StaticResource AccentBrush}"
+                Click="OnOpenMainClicked" />
+        </Grid>
+    </Border>
+</Window>
