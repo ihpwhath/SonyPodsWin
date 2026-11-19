@@ -326,7 +326,7 @@ public sealed class EqualizerControl : Grid
         // 3. Catmull-Rom 平滑曲线（无渐变填充，1.5px 细线）
         if (count >= 2)
         {
-            var curvePath = new Path
+            var curvePath = new Microsoft.UI.Xaml.Shapes.Path
             {
                 Stroke = CurveBrush,
                 StrokeThickness = 1.5,

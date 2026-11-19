@@ -727,7 +727,7 @@ public sealed class BleService : IAsyncDisposable
                 int chunkLen = Math.Min(limit, data.Length - offset);
                 using var writer = new DataWriter();
                 byte[] chunk = new byte[chunkLen];
-                Buffer.BlockCopy(data, offset, chunk, 0, chunkLen);
+                System.Buffer.BlockCopy(data, offset, chunk, 0, chunkLen);
                 writer.WriteBytes(chunk);
                 IBuffer buffer = writer.DetachBuffer();
 
