@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="SonyPodsWin.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="SonyPods">
+    <Window.SystemBackdrop>
+        <MicaBackdrop />
+    </Window.SystemBackdrop>
+
+    <NavigationView
+        x:Name="NavView"
+        PaneDisplayMode="Left"
+        IsBackButtonVisible="Collapsed"
+        IsSettingsVisible="False"
+        CompactPaneLength="48"
+        OpenPaneLength="220"
+        PaneTitle="SonyPods"
+        SelectionChanged="OnNavigationChanged">
+
+        <NavigationView.MenuItems>
+            <NavigationViewItem Content="降噪与音质" Tag="NoiseAudio">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xE7F6;" />
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem Content="索尼智能控制" Tag="SonySmart">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xE950;" />
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem Content="Windows 联动增强" Tag="WindowsIntegration">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xE7F4;" />
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem Content="协议日志" Tag="ProtocolLog">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xE756;" />
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem Content="关于" Tag="About">
+                <NavigationViewItem.Icon>
+                    <SymbolIcon Symbol="Help" />
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+        </NavigationView.MenuItems>
+
+        <Frame x:Name="ContentFrame" />
+    </NavigationView>
+</Window>
