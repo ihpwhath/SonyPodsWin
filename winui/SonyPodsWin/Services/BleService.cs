@@ -132,7 +132,7 @@ public sealed class BleService : IAsyncDisposable
 
                 string addr = FormatBluetoothAddress(leDev.BluetoothAddress);
                 byAddr[addr] = new DiscoveredDevice(
-                    Name: string.IsNullOrEmpty(name) ? addr : name,
+                    Name: string.IsNullOrEmpty(name) ? addr : NormalizeDisplayName(name),
                     Address: addr,
                     Rssi: null);
             }
@@ -172,7 +172,7 @@ public sealed class BleService : IAsyncDisposable
                 ? localName
                 : (byAddr.TryGetValue(addr, out var existing) ? existing.Name : addr);
 
-            byAddr[addr] = new DiscoveredDevice(displayName, addr, args.RawSignalStrengthInDBm);
+            byAddr[addr] = new DiscoveredDevice(NormalizeDisplayName(displayName), addr, args.RawSignalStrengthInDBm);
         }
 
         watcher.Received += OnReceived;
@@ -205,7 +205,7 @@ public sealed class BleService : IAsyncDisposable
                     .AsTask(cancellationToken);
                 if (cachedDev is not null && !string.IsNullOrWhiteSpace(cachedDev.Name))
                 {
-                    byAddr[kv.Key] = kv.Value with { Name = cachedDev.Name };
+                    byAddr[kv.Key] = kv.Value with { Name = NormalizeDisplayName(cachedDev.Name) };
                 }
             }
             catch (OperationCanceledException)
@@ -856,6 +856,22 @@ public sealed class BleService : IAsyncDisposable
     }
 
     private void EmitLog(string message) => LogMessage?.Invoke(this, message);
+
+    private static string NormalizeDisplayName(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            return name;
+        }
+
+        string trimmed = name.Trim();
+        if (trimmed.StartsWith("LE_", StringComparison.OrdinalIgnoreCase))
+        {
+            return trimmed.Substring(3);
+        }
+
+        return trimmed;
+    }
 
     private static bool MatchesSonyName(string name)
     {

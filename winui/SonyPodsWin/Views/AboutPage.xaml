@@ -33,7 +33,7 @@
                                 Foreground="{StaticResource TextPrimaryBrush}" />
                             <Button
                                 x:Name="VersionButton"
-                                Content="版本 0.1.0"
+                                Content="版本 0.1.1"
                                 FontSize="12"
                                 Padding="0,2"
                                 Background="Transparent"

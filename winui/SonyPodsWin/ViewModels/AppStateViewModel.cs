@@ -605,7 +605,7 @@ public sealed class AppStateViewModel : INotifyPropertyChanged
         }
         catch (Exception exc)
         {
-            RunOnUi(() => AppendError($"连接失败: {exc.Message}"));
+            RunOnUi(() => AppendError($"连接失败：请确认耳机已开机、且未被手机上的索尼 App 占用；若仍连不上，请到 Windows 设置→蓝牙里删除耳机后重新配对（配对时注意完成 LE 设备的配对请求），再重试。原始错误：{exc.Message}"));
         }
         finally
         {
