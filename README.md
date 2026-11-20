@@ -7,7 +7,7 @@
 
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011%20(x64)-0078D4?logo=windows)](https://github.com/ihpwhath/SonyPodsWin/releases)
 [![Framework](https://img.shields.io/badge/UI-WinUI%203%20%2F%20.NET%208-512BD4?logo=dotnet)](https://github.com/ihpwhath/SonyPodsWin)
-[![Release](https://img.shields.io/badge/Release-v0.1.0-D4B16A)](https://github.com/ihpwhath/SonyPodsWin/releases/tag/v0.1.0)
+[![Release](https://img.shields.io/badge/Release-v0.1.1-D4B16A)](https://github.com/ihpwhath/SonyPodsWin/releases/tag/v0.1.1)
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE_SONYPODS_GPL3.txt)
 
 [**⬇️ 下载最新版 (Releases)**](https://github.com/ihpwhath/SonyPodsWin/releases/latest) · [**📦 GitHub Actions 构建产物**](https://github.com/ihpwhath/SonyPodsWin/actions)
@@ -41,14 +41,14 @@
 
 ### 4. 🛠️ 隐藏式开发者协议日志
 - 默认隐藏且**后台零性能开销**（CPU 占用 `0%`）。
-- 如需抓包调试，前往 **「关于」** 页面**连续点击 5 次版本号 (`版本 0.1.0`)** 即可解锁「协议日志」页面，支持按级别（`INFO` / `FRAME` / `ERROR`）与关键字实时过滤、一键复制，调试完毕点击右上角 **「停止并隐藏」** 即可关闭。
+- 如需抓包调试，前往 **「关于」** 页面**连续点击 5 次版本号 (`版本 0.1.1`)** 即可解锁「协议日志」页面，支持按级别（`INFO` / `FRAME` / `ERROR`）与关键字实时过滤、一键复制，调试完毕点击右上角 **「停止并隐藏」** 即可关闭。
 
 ---
 
 ## 🚀 下载与使用
 
-1. 前往 [**Releases 页面**](https://github.com/ihpwhath/SonyPodsWin/releases/latest) 下载最新的 `SonyPodsWin-v0.1.0-win-x64.zip`。
-   - 国内网络打不开 GitHub 时，可用镜像直链下载同一文件：[SonyPodsWin-v0.1.0-win-x64.zip](https://hdsky.us.ci/dl-s7pw3x/SonyPodsWin-v0.1.0-win-x64.zip)
+1. 前往 [**Releases 页面**](https://github.com/ihpwhath/SonyPodsWin/releases/latest) 下载最新的 `SonyPodsWin-v0.1.1-win-x64.zip`。
+   - 国内网络无法访问 GitHub 时，可使用镜像下载 v0.1.0 历史存档：[SonyPodsWin-v0.1.0-win-x64.zip](https://hdsky.us.ci/dl-s7pw3x/SonyPodsWin-v0.1.0-win-x64.zip)
 2. 解压到任意固定文件夹（如 `D:\Apps\SonyPodsWin`）。
 3. 先将 **WH-1000XM6** 与 Windows 系统蓝牙配对并连接音频。
 4. 双击运行 **`SonyPodsWin.exe`**，点击右上角 **「连接」** 即可开始控制。

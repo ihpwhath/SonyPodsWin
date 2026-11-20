@@ -503,7 +503,9 @@ public sealed class AppStateViewModel : INotifyPropertyChanged
     /// <summary>供第三阶段启动加载 ~/.sonypodswin.json 时静默回填（不触发保存）。</summary>
     public void ApplySettings(SettingsSnapshot snapshot)
     {
-        ModelName = string.IsNullOrWhiteSpace(snapshot.LastName) ? "WH-1000XM6" : snapshot.LastName;
+        ModelName = string.IsNullOrWhiteSpace(snapshot.LastName)
+            ? "WH-1000XM6"
+            : BleService.NormalizeDisplayName(snapshot.LastName);
         CurrentAddress = snapshot.LastAddress;
         SetField(ref _showPopupOnConnect, snapshot.ShowPopupOnConnect, nameof(ShowPopupOnConnect));
         SetField(ref _autoReconnect, false, nameof(AutoReconnect));
@@ -537,10 +539,15 @@ public sealed class AppStateViewModel : INotifyPropertyChanged
                     DiscoveredDevices.Add(d);
                 }
 
-                if (string.IsNullOrEmpty(_currentAddress) && found.Count > 0)
+                bool currentStillPresent = !string.IsNullOrEmpty(_currentAddress) &&
+                    found.Any(d => string.Equals(d.Address, _currentAddress, StringComparison.OrdinalIgnoreCase));
+                if (found.Count > 0 && !currentStillPresent)
                 {
-                    CurrentAddress = found[0].Address;
-                    ModelName = found[0].Name;
+                    DiscoveredDevice preferred = found.FirstOrDefault(d =>
+                        string.Equals(d.Name, _modelName, StringComparison.OrdinalIgnoreCase))
+                        ?? found[0];
+                    CurrentAddress = preferred.Address;
+                    ModelName = preferred.Name;
                 }
 
                 AppendLog(ProtocolLogLevel.Info, "SCAN", $"发现 {found.Count} 台 Sony 蓝牙设备");
@@ -601,11 +608,11 @@ public sealed class AppStateViewModel : INotifyPropertyChanged
 
         try
         {
-            await _ble.ConnectAsync(_currentAddress);
+            await _ble.ConnectAsync(_currentAddress, _modelName);
         }
         catch (Exception exc)
         {
-            RunOnUi(() => AppendError($"连接失败：请确认耳机已开机、且未被手机上的索尼 App 占用；若仍连不上，请到 Windows 设置→蓝牙里删除耳机后重新配对（配对时注意完成 LE 设备的配对请求），再重试。原始错误：{exc.Message}"));
+            RunOnUi(() => AppendError($"控制通道连接失败：请确认耳机已开机并完成 Windows 经典蓝牙音频连接，且未被手机端 Sony Sound Connect 占用单客户端会话；如系统蓝牙服务缓存异常，可在 Windows 设置 → 蓝牙中移除耳机后重新配对再试。详细信息：{exc.Message}"));
         }
         finally
         {
@@ -801,6 +808,16 @@ public sealed class AppStateViewModel : INotifyPropertyChanged
             ConnectionState = newState;
             if (newState == BleConnectionState.Connected)
             {
+                if (!string.IsNullOrEmpty(_ble.ConnectedAddress))
+                {
+                    CurrentAddress = _ble.ConnectedAddress;
+                }
+
+                if (!string.IsNullOrEmpty(_ble.ConnectedDeviceName))
+                {
+                    ModelName = _ble.ConnectedDeviceName;
+                }
+
                 HandleConnected();
             }
         });
