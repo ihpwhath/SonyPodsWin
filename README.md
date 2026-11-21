@@ -48,7 +48,7 @@
 ## 🚀 下载与使用
 
 1. 前往 [**Releases 页面**](https://github.com/ihpwhath/SonyPodsWin/releases/latest) 下载最新的 `SonyPodsWin-v0.1.1-win-x64.zip`。
-   - 国内网络无法访问 GitHub 时，可使用镜像下载 v0.1.0 历史存档：[SonyPodsWin-v0.1.0-win-x64.zip](https://hdsky.us.ci/dl-s7pw3x/SonyPodsWin-v0.1.0-win-x64.zip)
+   - 国内网络无法访问 GitHub 时，可使用镜像下载最新版：[SonyPodsWin-v0.1.1-win-x64.zip](https://hdsky.us.ci/dl-s7pw3x/SonyPodsWin-v0.1.1-win-x64.zip)（v0.1.0 历史存档：[SonyPodsWin-v0.1.0-win-x64.zip](https://hdsky.us.ci/dl-s7pw3x/SonyPodsWin-v0.1.0-win-x64.zip)）
 2. 解压到任意固定文件夹（如 `D:\Apps\SonyPodsWin`）。
 3. 先将 **WH-1000XM6** 与 Windows 系统蓝牙配对并连接音频。
 4. 双击运行 **`SonyPodsWin.exe`**，点击右上角 **「连接」** 即可开始控制。
